@@ -696,18 +696,37 @@ def seed_platform():
             (None, "superadmin", "admin@cube.local", hash_password("admin123"), "Super", "Admin", ROLE_SUPER_ADMIN, "Attivo", now_iso())
         )
 
-    # Plans
-    if read_df("SELECT id FROM subscription_plans LIMIT 1").empty:
-        plans = [
-            ("Starter", 29.0, 3, 50, 100, ["CRM", "Contratti", "Lavori", "Documenti"]),
-            ("Professional", 79.0, 10, 500, 1000, ["CRM", "Contratti", "Pagamenti", "Fatture", "Staff"]),
-            ("Business", 149.0, 30, 3000, 10000, ["CRM", "Contratti", "Pagamenti", "Fatture", "Staff", "Report"]),
-            ("Enterprise", 0.0, 999, 999999, 999999, ["Tutto", "Supporto", "Personalizzazioni"]),
-        ]
-        for nome, prezzo, utenti, clienti, contratti, funzioni in plans:
+    # Plans: sincronizzazione piani ufficiali CUBE.
+    # Viene eseguita anche se il database contiene vecchi piani, così aggiorna prezzi/limiti online.
+    official_plans = [
+        ("Free", 0.0, 1, 3, 3, ["CRM base", "3 contratti gestibili", "1 utente admin", "Prova del gestionale"]),
+        ("Starter", 9.0, 2, 10, 10, ["CRM", "Contratti", "Documenti", "1 staff aggiuntivo"]),
+        ("Professional", 29.0, 4, 30, 30, ["CRM", "Contratti", "Pagamenti", "Fatture", "3 staff aggiuntivi"]),
+        ("Business", 49.0, 11, 100, 100, ["CRM", "Contratti", "Pagamenti", "Fatture", "10 staff aggiuntivi"]),
+        ("Enterprise", 99.0, 999999, 999999, 999999, ["Tutto illimitato", "Supporto", "Personalizzazioni", "Staff illimitato"]),
+    ]
+
+    # Disattiva eventuali vecchi piani non ufficiali.
+    official_names = tuple([p[0] for p in official_plans])
+    try:
+        existing = read_df("SELECT id,nome FROM subscription_plans")
+        for _, oldp in existing.iterrows():
+            if str(oldp["nome"]) not in official_names:
+                execute("UPDATE subscription_plans SET attivo=0 WHERE id=?", (int(oldp["id"]),))
+    except Exception:
+        pass
+
+    for nome, prezzo, utenti, clienti, contratti, funzioni in official_plans:
+        found = read_df("SELECT id FROM subscription_plans WHERE nome=?", (nome,))
+        if found.empty:
             execute(
                 "INSERT INTO subscription_plans (nome,prezzo_mensile,max_utenti,max_clienti,max_contratti,funzioni_json,attivo,created_at) VALUES (?,?,?,?,?,?,?,?)",
                 (nome, prezzo, utenti, clienti, contratti, json.dumps(funzioni), 1, now_iso())
+            )
+        else:
+            execute(
+                "UPDATE subscription_plans SET prezzo_mensile=?, max_utenti=?, max_clienti=?, max_contratti=?, funzioni_json=?, attivo=1 WHERE nome=?",
+                (prezzo, utenti, clienti, contratti, json.dumps(funzioni), nome)
             )
 
     # Global contract template
@@ -911,7 +930,18 @@ def sidebar():
 
 def get_public_plans() -> pd.DataFrame:
     try:
-        return read_df("SELECT * FROM subscription_plans WHERE attivo=1 ORDER BY prezzo_mensile")
+        return read_df("""
+            SELECT * FROM subscription_plans
+            WHERE attivo=1
+            ORDER BY CASE nome
+                WHEN 'Free' THEN 1
+                WHEN 'Starter' THEN 2
+                WHEN 'Professional' THEN 3
+                WHEN 'Business' THEN 4
+                WHEN 'Enterprise' THEN 5
+                ELSE 99
+            END
+        """)
     except Exception:
         return pd.DataFrame()
 
@@ -993,8 +1023,8 @@ def render_public_plan_cards():
                 <p style='color:#64748b;margin:8px 0 4px'>30 giorni gratuiti</p>
                 <h2 style='margin:0;color:#0c1d2f'>{money(price)} <span style='font-size:.85rem;color:#64748b'>/mese</span></h2>
                 <p style='color:#64748b;font-size:.9rem'>
-                    Utenti: {safe(p.get("max_utenti"))}<br>
-                    Clienti: {safe(p.get("max_clienti"))}<br>
+                    Utenti totali: {safe(p.get("max_utenti"))}<br>
+                    Clienti/contratti gestibili: {safe(p.get("max_clienti"))}<br>
                     Contratti: {safe(p.get("max_contratti"))}
                 </p>
                 <p style='color:#17263c;font-size:.88rem'>{safe(", ".join(funzioni[:5]))}</p>
