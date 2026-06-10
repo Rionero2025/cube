@@ -2,15 +2,16 @@ databases:
   - name: cube-postgres
     databaseName: cube_management_contract
     user: cube_user
+    plan: starter
     region: frankfurt
-    ipAllowList: []
 
 services:
   - type: web
     name: cube-management-contract
     env: docker
+    plan: starter
     region: frankfurt
-    plan: free
+    healthCheckPath: /
     envVars:
       - key: DATABASE_URL
         fromDatabase:

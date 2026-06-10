@@ -464,7 +464,8 @@ def estrai_dati_contratto_da_testo(raw_text: str) -> dict:
         via = _first(r"Indirizzo\s*Sede\s*Legale\s*[:\-]?\s*(.+?)\s+Citt", text)
         if not via: via = _first(r"(Via\s+.+?)\s+(?:Campobasso|Napoli|Roma|Milano|Firenze|Caserta|Salerno|Siano)", text)
         if not via and rag:
-            via = _first(rf"{re.escape(rag).replace('\\ ', r'\s+')}\s+(Via\s+.+?)(?:\s+\d{{11}}|\s+Referente|\s+Telefono|\s+Cellulare|$)", text, flags=re.I|re.S)
+            rag_pattern = re.escape(rag).replace("\\ ", r"\s+")
+            via = _first(rf"{rag_pattern}\s+(Via\s+.+?)(?:\s+\d{{11}}|\s+Referente|\s+Telefono|\s+Cellulare|$)", text, flags=re.I|re.S)
         citta = _first(r"Citt[àa]\s*[:\-]?\s*(.+?)\s*[-–]?\s*CAP", text)
         cap = _first(r"CAP\s*[:\-]?\s*(\d{5})", text)
         prov = _first(r"Provincia\s*[:\-]?\s*([A-Z]{2})", text)
