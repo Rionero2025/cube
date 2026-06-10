@@ -11,10 +11,6 @@ services:
     env: docker
     region: frankfurt
     plan: free
-    disk:
-      name: cube-saas-uploads
-      mountPath: /app/uploads
-      sizeGB: 1
     envVars:
       - key: DATABASE_URL
         fromDatabase:
