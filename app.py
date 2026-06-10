@@ -881,6 +881,7 @@ def sidebar():
             "🏢 Aziende SaaS": "tenants",
             "👤 Utenti globali": "global_users",
             "💳 Piani": "plans",
+            "🧩 Dati SaaS": "super_data",
             "📊 Log / Stato": "status",
         }
     else:
@@ -903,92 +904,275 @@ def sidebar():
 # LOGIN + REGISTRATION
 # ============================================================
 
-def login_page():
+
+# ============================================================
+# PUBLIC WEBSITE + LOGIN + REGISTRATION
+# ============================================================
+
+def get_public_plans() -> pd.DataFrame:
+    try:
+        return read_df("SELECT * FROM subscription_plans WHERE attivo=1 ORDER BY prezzo_mensile")
+    except Exception:
+        return pd.DataFrame()
+
+def set_public_page(page: str, plan_name: str | None = None):
+    st.session_state["public_page"] = page
+    if plan_name:
+        st.session_state["selected_plan_name"] = plan_name
+
+def public_topbar():
+    c1, c2, c3 = st.columns([5, 1, 1])
+    with c1:
+        st.markdown("### CUBE Management Contract")
+    with c2:
+        if st.button("Accedi", key="top_login"):
+            set_public_page("login")
+            st.rerun()
+    with c3:
+        if st.button("Registrati", key="top_register"):
+            set_public_page("plans")
+            st.rerun()
+
+def public_landing_page():
     css()
+    public_topbar()
+
+    st.markdown("""
+    <div class='hero'>
+        <span class='badge'>☁️ SaaS multi-azienda · 30 giorni gratis</span>
+        <h1>Il gestionale online per contratti, clienti, lavori e pagamenti</h1>
+        <p>
+            CUBE Management Contract è il portale SaaS pensato per aziende, consulenti, agenzie e società di servizi
+            che vogliono gestire contratti, CRM, scadenze, staff, documenti, rate, fatture interne e lavori in un unico sistema.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        card("CRM clienti", "Anagrafiche, schede cliente, note, documenti e storico lavori.")
+    with c2:
+        card("Contratti e rate", "Contratti, scadenze, pagamenti, acconti, saldi e residui.")
+    with c3:
+        card("Staff e permessi", "Ruoli operativi, finanziari e amministrativi per ogni azienda.")
+
+    section("🚀", "Come funziona", "Ogni azienda ha il proprio spazio riservato, il proprio logo e i propri dati isolati.")
+    s1, s2, s3, s4 = st.columns(4)
+    s1.metric("1", "Scegli piano")
+    s2.metric("2", "30 giorni gratis")
+    s3.metric("3", "Configura azienda")
+    s4.metric("4", "Gestisci contratti")
+
+    section("💳", "Scegli il pacchetto", "Tutti i piani includono 30 giorni di prova gratuita.")
+    render_public_plan_cards()
+
+    st.divider()
+    section("🔐", "Area riservata", "Hai già un account?")
+    if st.button("Vai al login", key="landing_login_bottom"):
+        set_public_page("login")
+        st.rerun()
+
+def render_public_plan_cards():
+    plans = get_public_plans()
+    if plans.empty:
+        st.info("I pacchetti saranno disponibili a breve.")
+        return
+
+    cols = st.columns(min(4, max(1, len(plans))))
+    for idx, (_, p) in enumerate(plans.iterrows()):
+        with cols[idx % len(cols)]:
+            try:
+                funzioni = json.loads(p.get("funzioni_json") or "[]")
+            except Exception:
+                funzioni = []
+            price = float(p.get("prezzo_mensile") or 0)
+            st.markdown(f"""
+            <div class='card' style='min-height:280px'>
+                <div class='label'>Piano</div>
+                <div class='value'>{safe(p.get("nome"))}</div>
+                <p style='color:#64748b;margin:8px 0 4px'>30 giorni gratuiti</p>
+                <h2 style='margin:0;color:#0c1d2f'>{money(price)} <span style='font-size:.85rem;color:#64748b'>/mese</span></h2>
+                <p style='color:#64748b;font-size:.9rem'>
+                    Utenti: {safe(p.get("max_utenti"))}<br>
+                    Clienti: {safe(p.get("max_clienti"))}<br>
+                    Contratti: {safe(p.get("max_contratti"))}
+                </p>
+                <p style='color:#17263c;font-size:.88rem'>{safe(", ".join(funzioni[:5]))}</p>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button(f"Prova gratis {p.get('nome')}", key=f"select_plan_{int(p['id'])}"):
+                set_public_page("register", str(p.get("nome")))
+                st.rerun()
+
+def public_plans_page():
+    css()
+    public_topbar()
+    section("💳", "Pacchetti CUBE", "Scegli il piano. Tutti includono 30 giorni gratuiti di prova.")
+    render_public_plan_cards()
+    st.divider()
+    if st.button("Torna alla home", key="back_home_from_plans"):
+        set_public_page("home")
+        st.rerun()
+
+def public_login_page():
+    css()
+    public_topbar()
     st.markdown("<br>", unsafe_allow_html=True)
-    st.title(APP_NAME)
-    st.caption("Login multi-azienda. Ogni azienda vede solo i propri dati.")
+    section("🔐", "Login area riservata", "Accedi al tuo spazio aziendale.")
 
-    tab_login, tab_reg = st.tabs(["🔐 Accedi", "🏢 Registra azienda"])
+    with st.form("login_form_public"):
+        username = st.text_input("Username o email")
+        password = st.text_input("Password", type="password")
+        submit = st.form_submit_button("Accedi")
 
-    with tab_login:
-        with st.form("login_form"):
-            username = st.text_input("Username o email")
-            password = st.text_input("Password", type="password")
-            submit = st.form_submit_button("Accedi")
-        if submit:
-            df = read_df("""
-                SELECT * FROM users
-                WHERE stato='Attivo'
-                  AND (LOWER(username)=LOWER(?) OR LOWER(COALESCE(email,''))=LOWER(?))
-                LIMIT 1
-            """, (username.strip(), username.strip()))
-            if df.empty:
-                st.error("Utente non trovato o non attivo.")
+    if submit:
+        df = read_df("""
+            SELECT * FROM users
+            WHERE stato='Attivo'
+              AND (LOWER(username)=LOWER(?) OR LOWER(COALESCE(email,''))=LOWER(?))
+            LIMIT 1
+        """, (username.strip(), username.strip()))
+        if df.empty:
+            st.error("Utente non trovato o non attivo.")
+        else:
+            row = df.iloc[0].to_dict()
+            if verify_password(password, row["password_hash"]):
+                if row.get("tenant_id") is not None and not pd.isna(row.get("tenant_id")):
+                    t = read_df("SELECT * FROM tenants WHERE id=?", (int(row["tenant_id"]),))
+                    if t.empty or str(t.iloc[0]["stato_account"]) in ["Sospeso", "Disattivato", "Scaduto"]:
+                        st.error("Account azienda non attivo. Contattare l'amministratore SaaS.")
+                        return
+                st.session_state["user_id"] = int(row["id"])
+                st.rerun()
             else:
-                row = df.iloc[0].to_dict()
-                if verify_password(password, row["password_hash"]):
-                    if row.get("tenant_id") is not None and not pd.isna(row.get("tenant_id")):
-                        t = read_df("SELECT * FROM tenants WHERE id=?", (int(row["tenant_id"]),))
-                        if t.empty or str(t.iloc[0]["stato_account"]) in ["Sospeso", "Disattivato", "Scaduto"]:
-                            st.error("Account azienda non attivo. Contattare l'amministratore SaaS.")
-                            return
-                    st.session_state["user_id"] = int(row["id"])
-                    st.rerun()
-                else:
-                    st.error("Password errata.")
+                st.error("Password errata.")
 
-        st.info("Super Admin iniziale: username `superadmin`, password `admin123`.")
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button("Non hai un account? Registrati", key="login_to_plans"):
+            set_public_page("plans")
+            st.rerun()
+    with c2:
+        if st.button("Torna alla home", key="login_to_home"):
+            set_public_page("home")
+            st.rerun()
 
-    with tab_reg:
-        st.subheader("Registra una nuova azienda")
-        with st.form("register_tenant"):
-            c1, c2 = st.columns(2)
-            with c1:
-                ragione = st.text_input("Ragione sociale *")
-                forma = st.text_input("Forma giuridica")
-                piva = st.text_input("Partita IVA")
-                cf = st.text_input("Codice fiscale")
-                sede = st.text_area("Sede legale")
-                logo = st.file_uploader("Logo azienda", type=["png", "jpg", "jpeg", "webp"])
-            with c2:
-                pec = st.text_input("PEC")
-                sdi = st.text_input("Codice SDI")
-                telefono = st.text_input("Telefono")
-                email_azienda = st.text_input("Email azienda")
-                admin_nome = st.text_input("Nome admin *")
-                admin_cognome = st.text_input("Cognome admin")
-                admin_email = st.text_input("Email admin *")
-                admin_user = st.text_input("Username admin *")
-                admin_password = st.text_input("Password admin *", type="password")
-            reg = st.form_submit_button("Crea azienda e account admin")
+def public_register_page():
+    css()
+    public_topbar()
 
-        if reg:
-            if not ragione.strip() or not admin_nome.strip() or not admin_email.strip() or not admin_user.strip() or not admin_password:
-                st.error("Compila ragione sociale e dati admin obbligatori.")
-            elif not read_df("SELECT id FROM users WHERE LOWER(username)=LOWER(?) OR LOWER(email)=LOWER(?)", (admin_user, admin_email)).empty:
-                st.error("Username o email admin già esistenti.")
-            else:
-                logo_rel = save_upload(logo, None, "tenant_logo_") if logo else None
-                tid = execute("""
-                    INSERT INTO tenants (ragione_sociale,forma_giuridica,partita_iva,codice_fiscale,sede_legale,pec,codice_sdi,telefono,email,logo_file,stato_account,piano_abbonamento,data_registrazione,note)
-                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-                """, (ragione, forma, piva, cf, sede, pec, sdi, telefono, email_azienda, logo_rel, "In prova", "Starter", today_iso(), "Registrazione autonoma"))
-                execute("""
-                    INSERT INTO companies (tenant_id,nome,forma_giuridica,piva,cf,sede,pec,codice_sdi,telefono,email,logo_file,is_default,created_at)
-                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
-                """, (tid, ragione, forma, piva, cf, sede, pec, sdi, telefono, email_azienda, logo_rel, 1, now_iso()))
-                uid = execute("""
-                    INSERT INTO users (tenant_id,username,email,password_hash,nome,cognome,ruolo,stato,telefono,created_at)
-                    VALUES (?,?,?,?,?,?,?,?,?,?)
-                """, (tid, admin_user, admin_email, hash_password(admin_password), admin_nome, admin_cognome, ROLE_ADMIN, "Attivo", telefono, now_iso()))
-                plan = read_df("SELECT id FROM subscription_plans WHERE nome='Starter' LIMIT 1")
-                plan_id = None if plan.empty else int(plan.iloc[0]["id"])
-                execute("""
-                    INSERT INTO subscriptions (tenant_id,piano_id,stato,data_inizio,data_scadenza,metodo_pagamento,note,created_at)
-                    VALUES (?,?,?,?,?,?,?,?)
-                """, (tid, plan_id, "In prova", today_iso(), add_months(date.today(), 1).isoformat(), "Da configurare", "Primo mese prova", now_iso()))
-                st.success("Azienda registrata. Ora puoi accedere con l'utente admin creato.")
+    selected_plan = st.session_state.get("selected_plan_name", "")
+    plans = get_public_plans()
+    if not selected_plan and not plans.empty:
+        selected_plan = str(plans.iloc[0]["nome"])
+
+    section("🏢", "Registrazione azienda", "Crea il tuo spazio aziendale. La prova gratuita dura 30 giorni.")
+
+    if plans.empty:
+        st.error("Nessun piano disponibile.")
+        return
+
+    plan_names = plans["nome"].astype(str).tolist()
+    if selected_plan not in plan_names:
+        selected_plan = plan_names[0]
+
+    plan_name = st.selectbox("Piano scelto", plan_names, index=plan_names.index(selected_plan))
+    selected = plans[plans["nome"].astype(str) == plan_name].iloc[0].to_dict()
+
+    st.success(f"Hai scelto il piano {plan_name}. I primi 30 giorni sono gratuiti.")
+
+    with st.form("register_tenant_public"):
+        st.markdown("### Dati azienda")
+        c1, c2 = st.columns(2)
+        with c1:
+            ragione = st.text_input("Ragione sociale *")
+            forma = st.text_input("Forma giuridica")
+            piva = st.text_input("Partita IVA")
+            cf = st.text_input("Codice fiscale")
+            sede = st.text_area("Sede legale")
+            logo = st.file_uploader("Logo azienda", type=["png", "jpg", "jpeg", "webp"])
+        with c2:
+            pec = st.text_input("PEC")
+            sdi = st.text_input("Codice SDI")
+            telefono = st.text_input("Telefono")
+            email_azienda = st.text_input("Email azienda")
+
+        st.markdown("### Account amministratore")
+        a1, a2 = st.columns(2)
+        with a1:
+            admin_nome = st.text_input("Nome admin *")
+            admin_cognome = st.text_input("Cognome admin")
+            admin_email = st.text_input("Email admin *")
+        with a2:
+            admin_user = st.text_input("Username admin *")
+            admin_password = st.text_input("Password admin *", type="password")
+            privacy = st.checkbox("Confermo di voler attivare la prova gratuita di 30 giorni")
+
+        reg = st.form_submit_button("Attiva prova gratuita")
+
+    if reg:
+        if not privacy:
+            st.error("Devi confermare l'attivazione della prova gratuita.")
+        elif not ragione.strip() or not admin_nome.strip() or not admin_email.strip() or not admin_user.strip() or not admin_password:
+            st.error("Compila ragione sociale e dati admin obbligatori.")
+        elif not read_df("SELECT id FROM users WHERE LOWER(username)=LOWER(?) OR LOWER(COALESCE(email,''))=LOWER(?)", (admin_user, admin_email)).empty:
+            st.error("Username o email admin già esistenti.")
+        else:
+            logo_rel = save_upload(logo, None, "tenant_logo_") if logo else None
+            tid = execute("""
+                INSERT INTO tenants (ragione_sociale,forma_giuridica,partita_iva,codice_fiscale,sede_legale,pec,codice_sdi,telefono,email,logo_file,stato_account,piano_abbonamento,data_registrazione,note)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            """, (ragione, forma, piva, cf, sede, pec, sdi, telefono, email_azienda, logo_rel, "In prova", plan_name, today_iso(), "Registrazione da sito pubblico con prova 30 giorni"))
+
+            execute("""
+                INSERT INTO companies (tenant_id,nome,forma_giuridica,piva,cf,sede,pec,codice_sdi,telefono,email,logo_file,is_default,created_at)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+            """, (tid, ragione, forma, piva, cf, sede, pec, sdi, telefono, email_azienda, logo_rel, 1, now_iso()))
+
+            execute("""
+                INSERT INTO users (tenant_id,username,email,password_hash,nome,cognome,ruolo,stato,telefono,created_at)
+                VALUES (?,?,?,?,?,?,?,?,?,?)
+            """, (tid, admin_user, admin_email, hash_password(admin_password), admin_nome, admin_cognome, ROLE_ADMIN, "Attivo", telefono, now_iso()))
+
+            plan_id = int(selected["id"])
+            trial_end = (date.today() + timedelta(days=30)).isoformat()
+            execute("""
+                INSERT INTO subscriptions (tenant_id,piano_id,stato,data_inizio,data_scadenza,metodo_pagamento,note,created_at)
+                VALUES (?,?,?,?,?,?,?,?)
+            """, (tid, plan_id, "In prova", today_iso(), trial_end, "Prova gratuita", f"Trial 30 giorni piano {plan_name}", now_iso()))
+
+            st.success("Registrazione completata. Ora puoi accedere con l'utente admin creato.")
+            set_public_page("login")
+
+def public_router():
+    # Permette link diretti tipo:
+    # /?public_page=login
+    # /?public_page=plans
+    # /?public_page=register&plan=Professional
+    try:
+        qp = st.query_params
+        qp_page = qp.get("public_page", None)
+        qp_plan = qp.get("plan", None)
+        if qp_page:
+            st.session_state["public_page"] = str(qp_page)
+        if qp_plan:
+            st.session_state["selected_plan_name"] = str(qp_plan)
+    except Exception:
+        pass
+
+    page = st.session_state.get("public_page", "home")
+    if page == "login":
+        public_login_page()
+    elif page == "plans":
+        public_plans_page()
+    elif page == "register":
+        public_register_page()
+    else:
+        public_landing_page()
+
+# Backwards compatibility
+def login_page():
+    public_router()
 
 
 # ============================================================
@@ -1060,64 +1244,360 @@ def page_super_dashboard():
     else:
         st.dataframe(tenants.sort_values("id", ascending=False).head(20), use_container_width=True, hide_index=True)
 
+
 def page_tenants():
     header()
-    section("🏢", "Aziende SaaS", "Gestione aziende registrate, stato account e piano.")
-    df = read_df("SELECT * FROM tenants ORDER BY id DESC")
+    section("🏢", "Aziende SaaS", "Il Super Admin può creare, modificare e gestire manualmente tutte le aziende registrate.")
+    if not is_super_admin():
+        st.error("Accesso riservato al Super Admin SaaS.")
+        return
+
+    tab_list, tab_create, tab_edit, tab_admin = st.tabs([
+        "📋 Elenco aziende",
+        "➕ Crea azienda",
+        "✏️ Modifica azienda",
+        "👤 Admin azienda"
+    ])
+
+    with tab_list:
+        df = read_df("SELECT * FROM tenants ORDER BY id DESC")
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Aziende totali", len(df))
+        c2.metric("Attive", len(df[df["stato_account"] == "Attivo"]) if not df.empty else 0)
+        c3.metric("In prova", len(df[df["stato_account"] == "In prova"]) if not df.empty else 0)
+        c4.metric("Sospese/scadute", len(df[df["stato_account"].isin(["Sospeso","Scaduto","Disattivato"])]) if not df.empty else 0)
+
+        if df.empty:
+            st.info("Nessuna azienda registrata.")
+        else:
+            view = df.copy()
+            st.dataframe(view, use_container_width=True, hide_index=True)
+
+    with tab_create:
+        st.subheader("Crea azienda manualmente")
+        st.caption("Questa funzione serve quando vuoi registrare tu l'azienda, senza far usare il form pubblico al cliente.")
+
+        with st.form("super_create_tenant"):
+            c1, c2 = st.columns(2)
+            with c1:
+                ragione = st.text_input("Ragione sociale *")
+                forma = st.text_input("Forma giuridica", placeholder="Es. S.r.l., S.r.l.s., S.a.s.")
+                piva = st.text_input("Partita IVA")
+                cf = st.text_input("Codice fiscale")
+                sede = st.text_area("Sede legale")
+                pec = st.text_input("PEC")
+                sdi = st.text_input("Codice SDI")
+                iban = st.text_input("IBAN")
+            with c2:
+                telefono = st.text_input("Telefono")
+                email_azienda = st.text_input("Email azienda")
+                stato = st.selectbox("Stato account", TENANT_STATUS, index=TENANT_STATUS.index("Attivo"))
+                piani = read_df("SELECT * FROM subscription_plans WHERE attivo=1 ORDER BY prezzo_mensile")
+                piano_nome = st.selectbox("Piano abbonamento", piani["nome"].tolist() if not piani.empty else ["Starter"])
+                logo = st.file_uploader("Logo azienda", type=["png","jpg","jpeg","webp"])
+                note = st.text_area("Note interne Super Admin")
+
+            st.markdown("### Primo Admin Azienda")
+            a1, a2 = st.columns(2)
+            with a1:
+                admin_nome = st.text_input("Nome admin *")
+                admin_cognome = st.text_input("Cognome admin")
+                admin_email = st.text_input("Email admin *")
+            with a2:
+                admin_username = st.text_input("Username admin *")
+                admin_password = st.text_input("Password admin *", type="password")
+                admin_tel = st.text_input("Telefono admin")
+
+            submitted = st.form_submit_button("✅ Crea azienda + admin + abbonamento")
+
+        if submitted:
+            if not ragione.strip() or not admin_nome.strip() or not admin_email.strip() or not admin_username.strip() or not admin_password:
+                st.error("Compila ragione sociale e dati obbligatori del primo admin.")
+            elif not read_df("SELECT id FROM users WHERE LOWER(username)=LOWER(?) OR LOWER(COALESCE(email,''))=LOWER(?)", (admin_username, admin_email)).empty:
+                st.error("Username o email admin già esistenti.")
+            else:
+                logo_rel = save_upload(logo, None, "tenant_logo_") if logo else None
+                tid = execute("""
+                    INSERT INTO tenants (ragione_sociale,forma_giuridica,partita_iva,codice_fiscale,sede_legale,pec,codice_sdi,iban,telefono,email,logo_file,stato_account,piano_abbonamento,data_registrazione,note)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                """, (ragione, forma, piva, cf, sede, pec, sdi, iban, telefono, email_azienda, logo_rel, stato, piano_nome, today_iso(), note))
+
+                execute("""
+                    INSERT INTO companies (tenant_id,nome,forma_giuridica,piva,cf,sede,pec,codice_sdi,iban,telefono,email,logo_file,note,is_default,created_at)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                """, (tid, ragione, forma, piva, cf, sede, pec, sdi, iban, telefono, email_azienda, logo_rel, note, 1, now_iso()))
+
+                execute("""
+                    INSERT INTO users (tenant_id,username,email,password_hash,nome,cognome,ruolo,stato,telefono,note,created_at)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?)
+                """, (tid, admin_username, admin_email, hash_password(admin_password), admin_nome, admin_cognome, ROLE_ADMIN, "Attivo", admin_tel, "Creato manualmente dal Super Admin", now_iso()))
+
+                piano_id = None
+                if not piani.empty:
+                    match = piani[piani["nome"] == piano_nome]
+                    if not match.empty:
+                        piano_id = int(match.iloc[0]["id"])
+
+                execute("""
+                    INSERT INTO subscriptions (tenant_id,piano_id,stato,data_inizio,data_scadenza,metodo_pagamento,note,created_at)
+                    VALUES (?,?,?,?,?,?,?,?)
+                """, (tid, piano_id, stato if stato in ["Attivo","In prova"] else "Sospeso", today_iso(), add_months(date.today(), 1).isoformat(), "Manuale", "Creato dal Super Admin", now_iso()))
+
+                st.success("Azienda creata manualmente con admin aziendale.")
+                st.rerun()
+
+    with tab_edit:
+        df = read_df("SELECT * FROM tenants ORDER BY ragione_sociale")
+        if df.empty:
+            st.info("Nessuna azienda da modificare.")
+            return
+
+        opts = {f"ID {int(r['id'])} · {r['ragione_sociale']} · {r['stato_account']}": int(r["id"]) for _, r in df.iterrows()}
+        tid = opts[st.selectbox("Seleziona azienda", list(opts.keys()), key="edit_tenant_select")]
+        t = read_df("SELECT * FROM tenants WHERE id=?", (tid,)).iloc[0].to_dict()
+
+        with st.form("super_edit_tenant"):
+            c1, c2 = st.columns(2)
+            with c1:
+                ragione = st.text_input("Ragione sociale", t.get("ragione_sociale") or "")
+                forma = st.text_input("Forma giuridica", t.get("forma_giuridica") or "")
+                piva = st.text_input("Partita IVA", t.get("partita_iva") or "")
+                cf = st.text_input("Codice fiscale", t.get("codice_fiscale") or "")
+                sede = st.text_area("Sede legale", t.get("sede_legale") or "")
+                pec = st.text_input("PEC", t.get("pec") or "")
+                sdi = st.text_input("Codice SDI", t.get("codice_sdi") or "")
+                iban = st.text_input("IBAN", t.get("iban") or "")
+            with c2:
+                telefono = st.text_input("Telefono", t.get("telefono") or "")
+                email = st.text_input("Email", t.get("email") or "")
+                stato = st.selectbox("Stato account", TENANT_STATUS, index=TENANT_STATUS.index(t.get("stato_account")) if t.get("stato_account") in TENANT_STATUS else 0)
+                piano = st.text_input("Piano abbonamento", t.get("piano_abbonamento") or "")
+                logo = st.file_uploader("Sostituisci logo", type=["png","jpg","jpeg","webp"])
+                note = st.text_area("Note", t.get("note") or "")
+            save_btn = st.form_submit_button("💾 Salva modifiche azienda")
+
+        if save_btn:
+            logo_rel = save_upload(logo, tid, "tenant_logo_") if logo else t.get("logo_file")
+            execute("""
+                UPDATE tenants SET ragione_sociale=?,forma_giuridica=?,partita_iva=?,codice_fiscale=?,sede_legale=?,pec=?,codice_sdi=?,iban=?,telefono=?,email=?,logo_file=?,stato_account=?,piano_abbonamento=?,note=?
+                WHERE id=?
+            """, (ragione, forma, piva, cf, sede, pec, sdi, iban, telefono, email, logo_rel, stato, piano, note, tid))
+
+            # Sincronizza anche l'azienda principale interna del tenant.
+            company = read_df("SELECT id FROM companies WHERE tenant_id=? AND is_default=1 ORDER BY id DESC LIMIT 1", (tid,))
+            if company.empty:
+                execute("""
+                    INSERT INTO companies (tenant_id,nome,forma_giuridica,piva,cf,sede,pec,codice_sdi,iban,telefono,email,logo_file,note,is_default,created_at)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                """, (tid, ragione, forma, piva, cf, sede, pec, sdi, iban, telefono, email, logo_rel, note, 1, now_iso()))
+            else:
+                execute("""
+                    UPDATE companies SET nome=?,forma_giuridica=?,piva=?,cf=?,sede=?,pec=?,codice_sdi=?,iban=?,telefono=?,email=?,logo_file=?,note=?
+                    WHERE id=? AND tenant_id=?
+                """, (ragione, forma, piva, cf, sede, pec, sdi, iban, telefono, email, logo_rel, note, int(company.iloc[0]["id"]), tid))
+
+            st.success("Azienda aggiornata.")
+            st.rerun()
+
+        st.markdown("### Azioni rapide")
+        a1, a2, a3 = st.columns(3)
+        if a1.button("✅ Attiva azienda", key=f"activate_{tid}"):
+            execute("UPDATE tenants SET stato_account='Attivo' WHERE id=?", (tid,))
+            st.success("Azienda attivata.")
+            st.rerun()
+        if a2.button("⏸️ Sospendi azienda", key=f"suspend_{tid}"):
+            execute("UPDATE tenants SET stato_account='Sospeso' WHERE id=?", (tid,))
+            st.warning("Azienda sospesa.")
+            st.rerun()
+        with a3:
+            confirm = st.checkbox("Confermo disattivazione", key=f"confirm_disable_{tid}")
+            if st.button("🚫 Disattiva", key=f"disable_{tid}", disabled=not confirm):
+                execute("UPDATE tenants SET stato_account='Disattivato' WHERE id=?", (tid,))
+                execute("UPDATE users SET stato='Disattivato' WHERE tenant_id=?", (tid,))
+                st.warning("Azienda e utenti disattivati.")
+                st.rerun()
+
+    with tab_admin:
+        st.subheader("Gestione admin/utenti azienda")
+        tenants = read_df("SELECT * FROM tenants ORDER BY ragione_sociale")
+        if tenants.empty:
+            st.info("Nessuna azienda.")
+            return
+        opts = {f"ID {int(r['id'])} · {r['ragione_sociale']}": int(r["id"]) for _, r in tenants.iterrows()}
+        tid = opts[st.selectbox("Azienda", list(opts.keys()), key="tenant_admin_users")]
+
+        users = read_df("SELECT * FROM users WHERE tenant_id=? ORDER BY id DESC", (tid,))
+        if users.empty:
+            st.info("Nessun utente aziendale.")
+        else:
+            st.dataframe(users[["id","username","email","nome","cognome","ruolo","stato","telefono","created_at"]], use_container_width=True, hide_index=True)
+
+        st.markdown("### Crea nuovo utente per questa azienda")
+        with st.form("super_create_user_for_tenant"):
+            c1, c2, c3 = st.columns(3)
+            username = c1.text_input("Username *")
+            email = c1.text_input("Email")
+            password = c1.text_input("Password *", type="password")
+            nome = c2.text_input("Nome *")
+            cognome = c2.text_input("Cognome")
+            telefono = c2.text_input("Telefono")
+            ruolo = c3.selectbox("Ruolo", ROLES, index=0)
+            stato = c3.selectbox("Stato", ["Attivo","Sospeso","Disattivato"], index=0)
+            note = st.text_area("Note")
+            if st.form_submit_button("Crea utente azienda"):
+                if not username or not password or not nome:
+                    st.error("Username, password e nome sono obbligatori.")
+                elif not read_df("SELECT id FROM users WHERE LOWER(username)=LOWER(?)", (username,)).empty:
+                    st.error("Username già esistente.")
+                else:
+                    execute("""
+                        INSERT INTO users (tenant_id,username,email,password_hash,nome,cognome,ruolo,stato,telefono,note,created_at)
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?)
+                    """, (tid, username, email, hash_password(password), nome, cognome, ruolo, stato, telefono, note, now_iso()))
+                    st.success("Utente creato.")
+                    st.rerun()
+
+
+def page_plans():
+    header()
+    section("💳", "Piani abbonamento", "Il Super Admin può creare, modificare, attivare e disattivare tutti i piani SaaS.")
+    if not is_super_admin():
+        st.error("Accesso riservato al Super Admin SaaS.")
+        return
+
+    tab_list, tab_create, tab_edit = st.tabs(["📋 Elenco piani", "➕ Crea piano", "✏️ Modifica piano"])
+
+    with tab_list:
+        df = read_df("SELECT * FROM subscription_plans ORDER BY prezzo_mensile")
+        if df.empty:
+            st.info("Nessun piano.")
+        else:
+            st.dataframe(df, use_container_width=True, hide_index=True)
+
+    with tab_create:
+        with st.form("new_plan"):
+            st.subheader("Crea nuovo piano")
+            c1, c2, c3, c4 = st.columns(4)
+            nome = c1.text_input("Nome piano")
+            prezzo = c2.number_input("Prezzo mensile", min_value=0.0, value=0.0)
+            utenti = c3.number_input("Max utenti", min_value=1, value=3)
+            clienti = c4.number_input("Max clienti", min_value=1, value=50)
+            contratti = st.number_input("Max contratti", min_value=1, value=100)
+            funzioni = st.text_area("Funzioni, una per riga")
+            attivo = st.checkbox("Piano attivo", value=True)
+            if st.form_submit_button("Crea piano"):
+                if not nome:
+                    st.error("Nome piano obbligatorio.")
+                else:
+                    execute("INSERT INTO subscription_plans (nome,prezzo_mensile,max_utenti,max_clienti,max_contratti,funzioni_json,attivo,created_at) VALUES (?,?,?,?,?,?,?,?)",
+                            (nome, prezzo, utenti, clienti, contratti, json.dumps([x.strip() for x in funzioni.splitlines() if x.strip()]), 1 if attivo else 0, now_iso()))
+                    st.success("Piano creato.")
+                    st.rerun()
+
+    with tab_edit:
+        df = read_df("SELECT * FROM subscription_plans ORDER BY prezzo_mensile")
+        if df.empty:
+            st.info("Nessun piano da modificare.")
+            return
+
+        opts = {f"ID {int(r['id'])} · {r['nome']} · {money(r['prezzo_mensile'])}/mese": int(r["id"]) for _, r in df.iterrows()}
+        pid = opts[st.selectbox("Seleziona piano", list(opts.keys()), key="edit_plan_select")]
+        p = df[df["id"] == pid].iloc[0].to_dict()
+        try:
+            funzioni_text = "\n".join(json.loads(p.get("funzioni_json") or "[]"))
+        except Exception:
+            funzioni_text = p.get("funzioni_json") or ""
+
+        with st.form("edit_plan_form"):
+            c1, c2, c3, c4 = st.columns(4)
+            nome = c1.text_input("Nome piano", p.get("nome") or "")
+            prezzo = c2.number_input("Prezzo mensile", min_value=0.0, value=float(p.get("prezzo_mensile") or 0))
+            utenti = c3.number_input("Max utenti", min_value=1, value=int(p.get("max_utenti") or 1))
+            clienti = c4.number_input("Max clienti", min_value=1, value=int(p.get("max_clienti") or 1))
+            contratti = st.number_input("Max contratti", min_value=1, value=int(p.get("max_contratti") or 1))
+            funzioni = st.text_area("Funzioni, una per riga", value=funzioni_text)
+            attivo = st.checkbox("Piano attivo", value=bool(int(p.get("attivo") or 0)))
+            if st.form_submit_button("💾 Salva modifiche piano"):
+                execute("""
+                    UPDATE subscription_plans SET nome=?,prezzo_mensile=?,max_utenti=?,max_clienti=?,max_contratti=?,funzioni_json=?,attivo=?
+                    WHERE id=?
+                """, (nome, prezzo, utenti, clienti, contratti, json.dumps([x.strip() for x in funzioni.splitlines() if x.strip()]), 1 if attivo else 0, pid))
+                st.success("Piano aggiornato.")
+                st.rerun()
+
+        st.markdown("### Azioni piano")
+        col1, col2 = st.columns(2)
+        if col1.button("✅ Attiva", key=f"plan_active_{pid}"):
+            execute("UPDATE subscription_plans SET attivo=1 WHERE id=?", (pid,))
+            st.success("Piano attivato.")
+            st.rerun()
+        if col2.button("⛔ Disattiva", key=f"plan_inactive_{pid}"):
+            execute("UPDATE subscription_plans SET attivo=0 WHERE id=?", (pid,))
+            st.warning("Piano disattivato.")
+            st.rerun()
+
+
+def page_global_users():
+    header()
+    section("👤", "Utenti globali", "Il Super Admin può vedere, creare e modificare tutti gli utenti di tutte le aziende.")
+    if not is_super_admin():
+        st.error("Accesso riservato al Super Admin SaaS.")
+        return
+
+    df = read_df("""
+        SELECT u.id, u.tenant_id, t.ragione_sociale tenant, u.username, u.email, u.nome, u.cognome, u.ruolo, u.stato, u.telefono, u.note, u.created_at
+        FROM users u LEFT JOIN tenants t ON t.id=u.tenant_id
+        ORDER BY u.id DESC
+    """)
     if not df.empty:
         st.dataframe(df, use_container_width=True, hide_index=True)
 
     st.divider()
-    st.subheader("Modifica azienda")
+    st.subheader("Modifica utente globale")
     if df.empty:
-        st.info("Nessuna azienda.")
         return
-    opts = {f"ID {r['id']} · {r['ragione_sociale']}": int(r["id"]) for _, r in df.iterrows()}
-    tid = opts[st.selectbox("Azienda", list(opts.keys()))]
-    t = df[df.id == tid].iloc[0].to_dict()
 
-    with st.form("edit_tenant"):
-        c1, c2 = st.columns(2)
-        ragione = c1.text_input("Ragione sociale", t.get("ragione_sociale") or "")
-        stato = c1.selectbox("Stato account", TENANT_STATUS, index=TENANT_STATUS.index(t.get("stato_account") if t.get("stato_account") in TENANT_STATUS else "Attivo"))
-        piano = c1.text_input("Piano", t.get("piano_abbonamento") or "")
-        email = c2.text_input("Email", t.get("email") or "")
-        telefono = c2.text_input("Telefono", t.get("telefono") or "")
-        note = st.text_area("Note", t.get("note") or "")
-        if st.form_submit_button("Salva azienda SaaS"):
-            execute("UPDATE tenants SET ragione_sociale=?,stato_account=?,piano_abbonamento=?,email=?,telefono=?,note=? WHERE id=?", (ragione, stato, piano, email, telefono, note, tid))
-            st.success("Azienda aggiornata.")
+    opts = {f"ID {int(r['id'])} · {r['username']} · {r['ruolo']} · {r.get('tenant') or 'Piattaforma'}": int(r["id"]) for _, r in df.iterrows()}
+    uid = opts[st.selectbox("Utente", list(opts.keys()), key="global_user_edit")]
+    u = read_df("SELECT * FROM users WHERE id=?", (uid,)).iloc[0].to_dict()
+
+    tenants = read_df("SELECT id, ragione_sociale FROM tenants ORDER BY ragione_sociale")
+    tenant_opts = {"Piattaforma / Super Admin": None}
+    for _, r in tenants.iterrows():
+        tenant_opts[f"ID {int(r['id'])} · {r['ragione_sociale']}"] = int(r["id"])
+
+    current_tid = None if u.get("tenant_id") is None or pd.isna(u.get("tenant_id")) else int(u.get("tenant_id"))
+    default_label = "Piattaforma / Super Admin"
+    for label, val in tenant_opts.items():
+        if val == current_tid:
+            default_label = label
+            break
+
+    with st.form("global_user_edit_form"):
+        c1, c2, c3 = st.columns(3)
+        tenant_label = c1.selectbox("Azienda / tenant", list(tenant_opts.keys()), index=list(tenant_opts.keys()).index(default_label))
+        username = c1.text_input("Username", u.get("username") or "")
+        email = c1.text_input("Email", u.get("email") or "")
+        nome = c2.text_input("Nome", u.get("nome") or "")
+        cognome = c2.text_input("Cognome", u.get("cognome") or "")
+        telefono = c2.text_input("Telefono", u.get("telefono") or "")
+        possible_roles = [ROLE_SUPER_ADMIN] + ROLES
+        ruolo = c3.selectbox("Ruolo", possible_roles, index=possible_roles.index(u.get("ruolo")) if u.get("ruolo") in possible_roles else 1)
+        stato = c3.selectbox("Stato", ["Attivo","Sospeso","Disattivato"], index=["Attivo","Sospeso","Disattivato"].index(u.get("stato")) if u.get("stato") in ["Attivo","Sospeso","Disattivato"] else 0)
+        password = st.text_input("Nuova password, lascia vuoto per non cambiarla", type="password")
+        note = st.text_area("Note", u.get("note") or "")
+        if st.form_submit_button("💾 Salva utente"):
+            new_tid = tenant_opts[tenant_label]
+            if ruolo == ROLE_SUPER_ADMIN:
+                new_tid = None
+            if password:
+                execute("UPDATE users SET tenant_id=?,username=?,email=?,password_hash=?,nome=?,cognome=?,ruolo=?,stato=?,telefono=?,note=? WHERE id=?",
+                        (new_tid, username, email, hash_password(password), nome, cognome, ruolo, stato, telefono, note, uid))
+            else:
+                execute("UPDATE users SET tenant_id=?,username=?,email=?,nome=?,cognome=?,ruolo=?,stato=?,telefono=?,note=? WHERE id=?",
+                        (new_tid, username, email, nome, cognome, ruolo, stato, telefono, note, uid))
+            st.success("Utente aggiornato.")
             st.rerun()
-
-def page_plans():
-    header()
-    section("💳", "Piani abbonamento", "Configura piani SaaS e limiti.")
-    df = read_df("SELECT * FROM subscription_plans ORDER BY prezzo_mensile")
-    st.dataframe(df, use_container_width=True, hide_index=True)
-    with st.form("new_plan"):
-        st.subheader("Crea nuovo piano")
-        c1, c2, c3, c4 = st.columns(4)
-        nome = c1.text_input("Nome piano")
-        prezzo = c2.number_input("Prezzo mensile", min_value=0.0, value=0.0)
-        utenti = c3.number_input("Max utenti", min_value=1, value=3)
-        clienti = c4.number_input("Max clienti", min_value=1, value=50)
-        contratti = st.number_input("Max contratti", min_value=1, value=100)
-        funzioni = st.text_area("Funzioni, una per riga")
-        if st.form_submit_button("Crea piano"):
-            execute("INSERT INTO subscription_plans (nome,prezzo_mensile,max_utenti,max_clienti,max_contratti,funzioni_json,attivo,created_at) VALUES (?,?,?,?,?,?,?,?)",
-                    (nome, prezzo, utenti, clienti, contratti, json.dumps([x.strip() for x in funzioni.splitlines() if x.strip()]), 1, now_iso()))
-            st.success("Piano creato.")
-            st.rerun()
-
-def page_global_users():
-    header()
-    section("👤", "Utenti globali", "Vista amministratore SaaS su tutti gli utenti.")
-    df = read_df("""
-        SELECT u.id, u.username, u.email, u.nome, u.cognome, u.ruolo, u.stato, t.ragione_sociale tenant
-        FROM users u LEFT JOIN tenants t ON t.id=u.tenant_id
-        ORDER BY u.id DESC
-    """)
-    st.dataframe(df, use_container_width=True, hide_index=True)
 
 def page_status():
     header()
@@ -1796,6 +2276,89 @@ def next_invoice_number(tid: int) -> int:
     return int(df.iloc[0]["n"] or 0) + 1
 
 
+
+
+# ============================================================
+# SUPER ADMIN DATA CONTROL
+# ============================================================
+
+def page_super_data():
+    header()
+    section("🧩", "Dati SaaS", "Vista completa Super Admin su clienti, contratti, pagamenti, fatture, lavori, documenti e feedback.")
+    if not is_super_admin():
+        st.error("Accesso riservato al Super Admin SaaS.")
+        return
+
+    tab_clients, tab_contracts, tab_payments, tab_invoices, tab_work, tab_docs, tab_feedback = st.tabs([
+        "Clienti", "Contratti", "Pagamenti", "Fatture", "Lavori", "Documenti", "Feedback"
+    ])
+
+    with tab_clients:
+        df = read_df("""
+            SELECT c.*, t.ragione_sociale tenant
+            FROM clients c JOIN tenants t ON t.id=c.tenant_id
+            ORDER BY c.id DESC
+        """)
+        st.dataframe(df, use_container_width=True, hide_index=True)
+
+    with tab_contracts:
+        df = read_df("""
+            SELECT c.*, t.ragione_sociale tenant, cl.ragione_sociale cliente
+            FROM contracts c
+            JOIN tenants t ON t.id=c.tenant_id
+            JOIN clients cl ON cl.id=c.client_id
+            ORDER BY c.id DESC
+        """)
+        st.dataframe(df, use_container_width=True, hide_index=True)
+
+    with tab_payments:
+        df = read_df("""
+            SELECT p.*, t.ragione_sociale tenant, cl.ragione_sociale cliente
+            FROM payments p
+            JOIN tenants t ON t.id=p.tenant_id
+            JOIN clients cl ON cl.id=p.client_id
+            ORDER BY p.data_scadenza DESC
+        """)
+        st.dataframe(df, use_container_width=True, hide_index=True)
+
+    with tab_invoices:
+        df = read_df("""
+            SELECT i.*, t.ragione_sociale tenant, cl.ragione_sociale cliente
+            FROM invoices i
+            JOIN tenants t ON t.id=i.tenant_id
+            JOIN clients cl ON cl.id=i.client_id
+            ORDER BY i.id DESC
+        """)
+        st.dataframe(df, use_container_width=True, hide_index=True)
+
+    with tab_work:
+        df = read_df("""
+            SELECT w.*, t.ragione_sociale tenant, cl.ragione_sociale cliente
+            FROM work_logs w
+            JOIN tenants t ON t.id=w.tenant_id
+            JOIN clients cl ON cl.id=w.client_id
+            ORDER BY w.id DESC
+        """)
+        st.dataframe(df, use_container_width=True, hide_index=True)
+
+    with tab_docs:
+        df = read_df("""
+            SELECT d.*, t.ragione_sociale tenant
+            FROM documents d JOIN tenants t ON t.id=d.tenant_id
+            ORDER BY d.id DESC
+        """)
+        st.dataframe(df, use_container_width=True, hide_index=True)
+
+    with tab_feedback:
+        df = read_df("""
+            SELECT f.*, t.ragione_sociale tenant, cl.ragione_sociale cliente
+            FROM feedback f
+            JOIN tenants t ON t.id=f.tenant_id
+            JOIN clients cl ON cl.id=f.client_id
+            ORDER BY f.id DESC
+        """)
+        st.dataframe(df, use_container_width=True, hide_index=True)
+
 # ============================================================
 # MAIN
 # ============================================================
@@ -1812,6 +2375,7 @@ def main():
     elif page == "tenants": page_tenants()
     elif page == "global_users": page_global_users()
     elif page == "plans": page_plans()
+    elif page == "super_data": page_super_data()
     elif page == "status": page_status()
     elif page == "dashboard": page_dashboard()
     elif page == "company": page_company()
