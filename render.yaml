@@ -1,19 +1,24 @@
 databases:
-  - name: cube-postgres
-    databaseName: cube_management_contract
+  - name: cube-saas-postgres
+    databaseName: cube_saas
     user: cube_user
-    plan: starter
     region: frankfurt
+    ipAllowList: []
 
 services:
   - type: web
-    name: cube-management-contract
+    name: cube-management-contract-saas
     env: docker
-    plan: starter
     region: frankfurt
-    healthCheckPath: /
+    plan: free
+    disk:
+      name: cube-saas-uploads
+      mountPath: /app/uploads
+      sizeGB: 1
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: cube-postgres
+          name: cube-saas-postgres
           property: connectionString
+      - key: UPLOAD_DIR
+        value: /app/uploads

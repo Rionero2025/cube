@@ -1,26 +1,60 @@
-# CUBE Management Contract — Streamlit Pro Universal
+# CUBE Management Contract SaaS
 
-Versione Streamlit rifattibile per gestione contratti, clienti CRM, documenti, lavori, pagamenti, rate/acconti/saldi e fatture interne.
+Versione SaaS multi-azienda / multi-tenant.
 
-## Avvio
+## Avvio locale
 
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
 ```
 
-## Note lettura contratti
-- PDF testuali: lettura diretta.
-- PDF grafici/moduli: lettura per blocchi + parser dedicato.
-- Foto/scansioni: richiede Tesseract OCR installato sul PC e `pytesseract`.
-- Tutti i dati importati restano modificabili prima e dopo il salvataggio.
+## Avvio online
 
-## Sezioni principali
-- Dashboard con Totale contratti, IVA contratti, Totale IVA inclusa, Incasso medio mensile.
-- Importa contratto nel gestionale.
-- Clienti CRM.
-- Contratti modificabili.
-- Pagamenti con celle editabili, acconti/saldi, allegati, modifica/elimina movimenti.
-- Lavori cliente con allegati.
-- Documenti.
-- Fatture interne con modifica/elimina archivio.
+Usa il file `render.yaml` su Render.
+
+## Login iniziale Super Admin
+
+```text
+username: superadmin
+password: admin123
+```
+
+## Flusso SaaS
+
+1. Il Super Admin accede.
+2. Le aziende possono registrarsi dalla pagina pubblica.
+3. Ogni azienda ha il proprio Admin Azienda.
+4. Ogni azienda vede solo i propri dati.
+5. Lo staff vede solo ciò che il ruolo consente.
+
+## Ruoli
+
+- Super Admin SaaS
+- Admin Azienda
+- Manager Operativo
+- Gestione Finanziaria
+- Operativo Avanzato
+- Operativo Base
+
+## Database
+
+- PostgreSQL se è presente `DATABASE_URL`
+- SQLite locale se `DATABASE_URL` non è presente
+
+## Struttura
+
+```text
+app.py
+requirements.txt
+Dockerfile
+render.yaml
+Procfile
+start.sh
+docs/
+migrations/
+scripts/
+tests/
+uploads/
+data/
+```
