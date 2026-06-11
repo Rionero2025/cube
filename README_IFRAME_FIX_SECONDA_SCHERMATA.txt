@@ -1,0 +1,1 @@
+Questa versione renderizza la landing pubblica in iframe isolato tramite streamlit.components.v1.html. Così l HTML non viene più mostrato come testo e la pagina risulta molto più vicina alla seconda schermata.

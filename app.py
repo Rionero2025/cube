@@ -13,6 +13,7 @@ from typing import Any
 
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 
 try:
     import psycopg2
@@ -1671,140 +1672,49 @@ def public_topbar():
     """), unsafe_allow_html=True)
 
 
+def render_public_html(html: str, height: int = 2450):
+    """Render della landing in iframe isolato: evita che Streamlit trasformi l'HTML in testo/codice."""
+    components.html(html, height=height, scrolling=True)
+
+
+def cube_second_screen_html() -> str:
+    return """
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{--blue:#0f6dd0;--blue2:#0a56bd;--navy:#061b3a;--text:#122541;--muted:#60728c;--line:#dbe8f6;--soft:#eef6ff;--shadow:0 18px 45px rgba(8,34,73,.10)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,Manrope,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:var(--text);background:radial-gradient(circle at 84% 7%,rgba(15,109,208,.09),transparent 28%),linear-gradient(180deg,#fff 0%,#f7fbff 44%,#eef5fc 100%)}a{text-decoration:none}.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+.header{height:72px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(219,232,246,.72);background:rgba(255,255,255,.86);position:sticky;top:0;z-index:20;backdrop-filter:blur(14px)}.header-inner{display:flex;align-items:center;justify-content:space-between;gap:22px;width:100%}.brand{display:flex;align-items:center;gap:11px;color:var(--navy)}.brand-mark{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#1689ff,#0a4297);box-shadow:0 10px 24px rgba(15,109,208,.22);font-weight:900}.brand strong{font-size:1.65rem;letter-spacing:-.055em;line-height:1}.brand small{display:inline-block;margin-left:6px;color:#203856;font-weight:700;font-size:.88rem;line-height:1.05}.nav{display:flex;align-items:center;gap:34px;font-weight:800;color:#29435f;font-size:.94rem}.nav a{color:#29435f}.actions{display:flex;gap:12px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:12px;padding:12px 20px;font-weight:900;border:1px solid transparent;transition:.16s ease}.btn:hover{transform:translateY(-1px)}.btn.primary{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:0 14px 30px rgba(15,109,208,.22)}.btn.secondary{background:#fff;color:#0f53a5;border-color:#bcd3ee}
+.hero{padding:52px 0 36px}.hero-grid{display:grid;grid-template-columns:.94fr 1.06fr;gap:44px;align-items:center}.badge{display:inline-flex;align-items:center;gap:8px;background:#eaf3ff;color:#0f53a5;border:1px solid #cfe2fa;border-radius:999px;padding:7px 12px;font-size:.82rem;font-weight:900;margin-bottom:18px}h1{margin:0 0 18px;font-size:clamp(2.8rem,5.1vw,5.2rem);line-height:.96;color:var(--navy);letter-spacing:-.065em}h1 span{color:var(--blue)}.lead{font-size:1.08rem;line-height:1.7;color:#526982;margin:0 0 25px;max-width:650px}.hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:24px}.micro{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;color:#50657f;font-size:.82rem;font-weight:800;max-width:760px}.micro div{display:flex;gap:9px;align-items:flex-start}.micro b{display:block;color:#263f5d;font-size:.83rem}.micro small{display:block;color:#718197;font-weight:600;margin-top:2px}
+.visual{position:relative;min-height:500px}.browser{background:#fff;border:1px solid #dbe8f6;border-radius:24px;padding:14px;box-shadow:0 26px 62px rgba(8,34,73,.13);margin-left:40px}.browser-top{display:flex;gap:7px;padding:0 0 13px}.browser-top i{width:10px;height:10px;border-radius:999px;background:#d7e5f4}.app-shell{display:grid;grid-template-columns:72px 1fr;gap:14px}.sidebar{background:linear-gradient(180deg,#08244a,#06336f);border-radius:18px;padding:14px 9px;min-height:285px}.sidebar .cube{width:34px;height:34px;border-radius:12px;background:#fff;margin:0 auto 14px}.sidebar i{display:block;width:38px;height:8px;border-radius:999px;background:rgba(255,255,255,.25);margin:13px auto}.app-main h3{margin:2px 0 12px;color:var(--navy);font-size:1rem}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:12px}.kpi{border:1px solid #e2edf8;background:#fbfdff;border-radius:13px;padding:10px}.kpi small{display:block;font-size:.64rem;color:#6d7f96;font-weight:800;margin-bottom:4px}.kpi b{display:block;color:var(--navy)}.panels{display:grid;grid-template-columns:1.12fr .88fr;gap:12px}.panel{border:1px solid #e2edf8;background:#fbfdff;border-radius:16px;padding:12px;min-height:125px}.chart{height:92px;border-radius:14px;background:linear-gradient(150deg,transparent 0 25%,rgba(15,109,208,.18) 25% 27%,transparent 27% 48%,rgba(25,169,220,.28) 48% 51%,transparent 51%),repeating-linear-gradient(0deg,#edf5fc 0 1px,transparent 1px 23px)}.list p{display:flex;justify-content:space-between;gap:8px;margin:8px 0;color:#556b84;font-size:.72rem}.clienti{position:absolute;right:0;top:0;width:150px;background:#fff;border:1px solid #dbe8f6;border-radius:18px;padding:13px;box-shadow:0 20px 45px rgba(8,34,73,.11)}.clienti h4,.float h4{margin:0 0 8px;color:var(--navy);font-size:.82rem}.clienti p{display:flex;justify-content:space-between;margin:8px 0;color:#526982;font-size:.68rem}.float{position:absolute;background:#fff;border:1px solid #dbe8f6;border-radius:18px;padding:14px;box-shadow:0 20px 45px rgba(8,34,73,.12)}.float.contracts{left:0;bottom:76px;width:250px}.float.invoice{left:255px;bottom:76px;width:260px}.float.pay{right:10px;bottom:70px;width:220px;text-align:center}.pill{background:#dcfce7;color:#166534;border-radius:999px;padding:4px 8px;font-size:.65rem;font-weight:900}.donut{width:108px;height:108px;margin:6px auto 8px;border-radius:999px;background:conic-gradient(#0f6dd0 0 62%,#20bf78 62% 82%,#ffb020 82% 100%);display:grid;place-items:center}.donut span{width:68px;height:68px;border-radius:999px;background:#fff;display:grid;place-items:center;font-weight:900;color:var(--navy)}
+.feature-ribbon{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line);border-radius:22px;background:rgba(255,255,255,.88);box-shadow:0 14px 30px rgba(8,34,73,.06);overflow:hidden;margin:0 auto 26px}.ribbon-item{display:flex;gap:15px;padding:18px;border-right:1px solid var(--line)}.ribbon-item:last-child{border-right:0}.ribbon-icon{width:52px;height:52px;border-radius:16px;background:#eef6ff;color:#0f6dd0;display:grid;place-items:center;font-size:1.5rem;flex:0 0 auto}.ribbon-item b{display:block;color:var(--navy);margin-bottom:4px}.ribbon-item small{display:block;color:#60728c;line-height:1.35}.features{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line);border-radius:22px;background:#fff;box-shadow:0 14px 30px rgba(8,34,73,.06);overflow:hidden;margin:26px auto}.feat{display:flex;gap:15px;padding:22px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);min-height:135px}.feat:nth-child(4n){border-right:0}.feat:nth-child(n+5){border-bottom:0}.feat-icon{width:54px;height:54px;border-radius:16px;background:#eef6ff;color:#0f6dd0;display:grid;place-items:center;font-size:1.5rem;flex:0 0 auto}.feat b{display:block;color:var(--navy);margin-bottom:4px}.feat small{color:#60728c;line-height:1.35}.section-title{text-align:center;margin:30px 0 18px}.section-title h2{margin:0;color:var(--navy);font-size:2rem;letter-spacing:-.035em}.section-title p{margin:5px 0 0;color:#60728c}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:28px}.step{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:0 12px 28px rgba(8,34,73,.05);display:flex;gap:14px;align-items:center}.num{width:30px;height:30px;border-radius:999px;background:#0f6dd0;color:#fff;display:grid;place-items:center;font-weight:900;flex:0 0 auto}.step b{color:var(--navy);display:block;font-size:.92rem}.step small{color:#60728c;display:block;line-height:1.3}
+.pricing{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin:0 0 22px}.price-card{position:relative;background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px;text-align:center;box-shadow:0 14px 32px rgba(8,34,73,.06);min-height:312px;display:flex;flex-direction:column}.price-card.popular{border:2px solid var(--blue);box-shadow:0 18px 42px rgba(15,109,208,.16);transform:translateY(-10px)}.ribbon{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--blue);color:#fff;border-radius:999px;padding:5px 14px;font-size:.72rem;font-weight:900}.plan-icon{width:54px;height:54px;border-radius:999px;background:#eef6ff;color:#0f6dd0;display:grid;place-items:center;margin:0 auto 10px;font-size:1.5rem}.price-card h3{margin:0;color:var(--navy)}.price{font-size:2rem;font-weight:900;color:var(--navy);margin:10px 0 3px;letter-spacing:-.04em}.price small{font-size:.77rem;color:#60728c}.price-card p{margin:0 0 12px;color:#60728c;font-size:.88rem}.price-card ul{list-style:none;padding:0;margin:0 0 16px;text-align:left;color:#203653;font-size:.88rem;line-height:1.65}.price-card li:before{content:'✓';color:var(--blue);font-weight:900;margin-right:7px}.price-card .btn{margin-top:auto;width:100%;padding:10px}.benefits{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:8px 0 26px}.benefit{background:#fff;border:1px solid var(--line);border-radius:18px;padding:15px;display:flex;gap:12px;align-items:center;box-shadow:0 10px 24px rgba(8,34,73,.05)}.benefit span{width:42px;height:42px;border-radius:14px;background:#eef6ff;color:#0f6dd0;display:grid;place-items:center;flex:0 0 auto}.benefit b{display:block;color:var(--navy);font-size:.9rem}.benefit small{display:block;color:#60728c;font-size:.78rem;line-height:1.25}.cta{display:flex;align-items:center;justify-content:space-between;gap:22px;background:linear-gradient(135deg,#0f6dd0,#0742a0 72%,#062a66);border-radius:24px;padding:28px;color:#fff;box-shadow:0 18px 44px rgba(15,109,208,.24);margin:0 0 0}.cta h2{margin:0 0 5px;font-size:2rem;letter-spacing:-.04em}.cta p{margin:0;color:#dcecff}.footer{background:#061b3a;color:#d1def0;margin-top:0;padding:28px 0}.footer-grid{display:grid;grid-template-columns:1.3fr repeat(5,1fr);gap:24px}.footer b{color:#fff;display:block;margin-bottom:8px}.footer p,.footer a{color:#d1def0;font-size:.88rem;line-height:1.5}.footer a{display:block;margin:7px 0}.newsletter{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:18px;padding:14px}.newsletter input{width:100%;border:0;border-radius:12px;padding:12px;margin-top:8px}
+@media(max-width:1100px){.hero-grid,.features,.feature-ribbon,.steps,.pricing,.benefits,.footer-grid{grid-template-columns:1fr 1fr}.feat{border:1px solid var(--line)}.visual{min-height:auto}.float,.clienti{position:static;margin-top:12px;width:auto!important}}@media(max-width:760px){.nav{display:none}.actions{gap:8px}.hero-grid,.feature-ribbon,.features,.steps,.pricing,.benefits,.footer-grid{grid-template-columns:1fr}h1{font-size:2.45rem}.micro{grid-template-columns:1fr}.app-shell{grid-template-columns:1fr}.sidebar{display:none}.kpis,.panels{grid-template-columns:1fr}.cta{flex-direction:column;align-items:flex-start}.btn{width:100%}}
+</style>
+</head>
+<body>
+<header class='header'><div class='wrap header-inner'><a class='brand' href='#'><div class='brand-mark'>⬢</div><div><strong>CUBE</strong><small>Management<br>Contract</small></div></a><nav class='nav'><a href='#features'>Funzionalità</a><a href='#steps'>Come funziona</a><a href='#pricing'>Prezzi</a><a href='#faq'>FAQ</a></nav><div class='actions'><a class='btn secondary' target='_parent' href='/?public_page=login'>Accedi</a><a class='btn primary' target='_parent' href='/?public_page=plans'>Registrati</a></div></div></header>
+<main>
+<section class='hero wrap'><div class='hero-grid'><div><div class='badge'>☁️ Multi-azienda · 30 giorni gratis</div><h1>Il gestionale online per <span>contratti, clienti, lavori e pagamenti</span></h1><p class='lead'>CUBE Management Contract aiuta aziende, consulenti, agenzie e società di servizi a gestire CRM, contratti, scadenze, staff, documenti, rate, pagamenti e fatture interne in un unico sistema semplice e sicuro.</p><div class='hero-actions'><a class='btn primary' target='_parent' href='/?public_page=plans'>Prova gratis 30 giorni →</a><a class='btn secondary' href='#features'>Guarda le funzionalità ▶</a></div><div class='micro'><div>💳<span><b>Nessuna carta di credito</b><small>Non serve inserire dati di pagamento</small></span></div><div>✅<span><b>Attivazione immediata</b><small>Crea il tuo account in pochi secondi</small></span></div><div>🎧<span><b>Assistenza dedicata</b><small>Siamo qui per aiutarti</small></span></div></div></div><div class='visual'><div class='browser'><div class='browser-top'><i></i><i></i><i></i></div><div class='app-shell'><div class='sidebar'><div class='cube'></div><i></i><i></i><i></i><i></i><i></i></div><div><div class='app-main'><h3>Dashboard</h3><div class='kpis'><div class='kpi'><small>Contratti attivi</small><b>128</b></div><div class='kpi'><small>Scadenze</small><b>24</b></div><div class='kpi'><small>Fatturato mese</small><b>€48.750</b></div><div class='kpi'><small>Pagamenti ricevuti</small><b>€32.100</b></div></div><div class='panels'><div class='panel'><b>Panoramica</b><div class='chart'></div></div><div class='panel list'><b>Scadenze prossime</b><p><span>Contratto consulenza</span><span>15 mag</span></p><p><span>Manutenzione</span><span>18 mag</span></p><p><span>Servizio assistenza</span><span>22 mag</span></p></div></div></div></div></div></div><div class='clienti'><h4>Clienti recenti</h4><p><span>Rossi S.p.A.</span><span>›</span></p><p><span>Verdi S.r.l.</span><span>›</span></p><p><span>Bianchi & C.</span><span>›</span></p><p><span>Studio Alfa</span><span>›</span></p></div><div class='float contracts'><h4>Contratti attivi</h4><p>Consulenza strategica <span class='pill'>Attivo</span></p><p>Manutenzione annuale <span class='pill'>Attivo</span></p><p>Servizio supporto <span class='pill'>Attivo</span></p></div><div class='float invoice'><h4>Fatture interne</h4><p>FAT-2024-012 · €2.450,00</p><p>FAT-2024-011 · €1.800,00</p><p>FAT-2024-010 · €3.200,00</p></div><div class='float pay'><h4>Pagamenti</h4><div class='donut'><span>€32.100</span></div><small>Totale ricevuto</small></div></div></div></section>
+<section class='wrap feature-ribbon'><div class='ribbon-item'><div class='ribbon-icon'>🏢</div><div><b>Multi-azienda</b><small>Gestisci più aziende da un unico account.</small></div></div><div class='ribbon-item'><div class='ribbon-icon'>👥</div><div><b>Ruoli e permessi</b><small>Permessi granulari per il tuo team.</small></div></div><div class='ribbon-item'><div class='ribbon-icon'>📄</div><div><b>Contratti e pagamenti</b><small>Rate, acconti e saldi in tempo reale.</small></div></div><div class='ribbon-item'><div class='ribbon-icon'>☁️</div><div><b>Accesso cloud</b><small>Ovunque, sempre aggiornato.</small></div></div></section>
+<section id='features' class='wrap features'><div class='feat'><div class='feat-icon'>👥</div><div><b>CRM clienti</b><small>Anagrafiche complete, note, storico attività e documenti.</small></div></div><div class='feat'><div class='feat-icon'>📚</div><div><b>Contratti e scadenze</b><small>Gestisci contratti, rinnovi, scadenze e alert.</small></div></div><div class='feat'><div class='feat-icon'>📊</div><div><b>Lavori e report</b><small>Organizza lavori e genera report dettagliati.</small></div></div><div class='feat'><div class='feat-icon'>💳</div><div><b>Pagamenti e rate</b><small>Acconti, saldi e residui in modo chiaro.</small></div></div><div class='feat'><div class='feat-icon'>🧾</div><div><b>Fatture interne</b><small>Bozze, invii e storico in pochi clic.</small></div></div><div class='feat'><div class='feat-icon'>🛡️</div><div><b>Staff e permessi</b><small>Ruoli e accessi per ogni membro del team.</small></div></div><div class='feat'><div class='feat-icon'>🏢</div><div><b>Multi-azienda SaaS</b><small>Dati isolati per ogni azienda.</small></div></div><div class='feat'><div class='feat-icon'>📈</div><div><b>Dashboard operative</b><small>KPI in tempo reale per decisioni rapide.</small></div></div></section>
+<section id='steps' class='wrap'><div class='section-title'><h2>Come funziona</h2></div><div class='steps'><div class='step'><div class='num'>1</div><div><b>Scegli il piano</b><small>Seleziona il piano più adatto.</small></div></div><div class='step'><div class='num'>2</div><div><b>30 giorni gratis</b><small>Prova tutto senza impegno.</small></div></div><div class='step'><div class='num'>3</div><div><b>Configura azienda</b><small>Imposta dati, ruoli e staff.</small></div></div><div class='step'><div class='num'>4</div><div><b>Gestisci tutto</b><small>Clienti, contratti e pagamenti.</small></div></div></div></section>
+<section id='pricing' class='wrap'><div class='section-title'><h2>Scegli il pacchetto</h2><p>Tutti i piani includono 30 giorni di prova gratuita.</p></div><div class='pricing'><div class='price-card'><div class='plan-icon'>👤</div><h3>Free</h3><div class='price'>€0<small>/mese</small></div><p>30 giorni gratuiti</p><ul><li>Fino a 3 contratti</li></ul><a class='btn secondary' target='_parent' href='/?public_page=register&plan=Free'>Prova gratis</a></div><div class='price-card'><div class='plan-icon'>🚀</div><h3>Starter</h3><div class='price'>€9<small>/mese</small></div><p>30 giorni gratuiti</p><ul><li>10 clienti / contratti</li><li>1 staff aggiuntivo</li></ul><a class='btn secondary' target='_parent' href='/?public_page=register&plan=Starter'>Scegli piano</a></div><div class='price-card popular'><div class='ribbon'>Più scelto</div><div class='plan-icon'>⭐</div><h3>Professional</h3><div class='price'>€29<small>/mese</small></div><p>30 giorni gratuiti</p><ul><li>30 clienti</li><li>3 membri staff</li></ul><a class='btn primary' target='_parent' href='/?public_page=register&plan=Professional'>Scegli piano</a></div><div class='price-card'><div class='plan-icon'>💼</div><h3>Business</h3><div class='price'>€49<small>/mese</small></div><p>30 giorni gratuiti</p><ul><li>100 clienti</li><li>10 membri staff</li></ul><a class='btn secondary' target='_parent' href='/?public_page=register&plan=Business'>Scegli piano</a></div><div class='price-card'><div class='plan-icon'>👑</div><h3>Enterprise</h3><div class='price'>€99<small>/mese</small></div><p>30 giorni gratuiti</p><ul><li>Tutto illimitato</li><li>Supporto prioritario</li></ul><a class='btn secondary' target='_parent' href='/?public_page=register&plan=Enterprise'>Scegli piano</a></div></div></section>
+<section class='wrap benefits'><div class='benefit'><span>☁️</span><div><b>Multi-tenant SaaS</b><small>Più aziende, dati separati.</small></div></div><div class='benefit'><span>👥</span><div><b>Accessi staff</b><small>Ruoli e responsabilità.</small></div></div><div class='benefit'><span>🔒</span><div><b>Dati separati</b><small>Ogni azienda ha i propri dati.</small></div></div><div class='benefit'><span>☁️</span><div><b>Cloud online</b><small>Accesso sempre disponibile.</small></div></div><div class='benefit'><span>📱</span><div><b>Responsive</b><small>Desktop, tablet e smartphone.</small></div></div></section>
+<section class='wrap cta'><div><h2>Porta online la gestione della tua azienda</h2><p>Semplifica contratti, clienti, lavori e pagamenti. Inizia oggi la prova gratuita di 30 giorni.</p></div><div class='hero-actions' style='margin:0'><a class='btn secondary' target='_parent' href='/?public_page=plans'>Inizia ora →</a><a class='btn primary' target='_parent' href='/?public_page=plans'>Richiedi demo</a></div></section>
+<footer class='footer'><div class='wrap footer-grid'><div><b>CUBE Management Contract</b><p>Il gestionale online per aziende, consulenti e società di servizi.</p></div><div><b>Prodotto</b><a>Funzionalità</a><a>Prezzi</a><a>Integrazioni</a></div><div><b>Azienda</b><a>Chi siamo</a><a>Lavora con noi</a><a>Contatti</a></div><div><b>Supporto</b><a>FAQ</a><a>Guide e tutorial</a><a>Assistenza</a></div><div><b>Legale</b><a>Privacy policy</a><a>Termini di servizio</a><a>Cookie policy</a></div><div class='newsletter'><b>Resta aggiornato</b><p>Novità e consigli utili.</p><input placeholder='La tua email'></div></div></footer>
+</main>
+</body>
+</html>
+    """
+
+
 def public_landing_page():
     css()
-    public_topbar()
-
-    hero_html = textwrap.dedent("""
-    <div class="premium-hero">
-      <div class="premium-hero-grid">
-        <div>
-          <div class="premium-badge">☁️ Multi-azienda · 30 giorni gratis</div>
-          <h1>Il gestionale online per <span>contratti, clienti, lavori e pagamenti</span></h1>
-          <p>
-            CUBE Management Contract aiuta aziende, consulenti, agenzie e società di servizi a gestire
-            CRM, contratti, scadenze, staff, documenti, rate, pagamenti e fatture interne in un unico
-            sistema semplice e sicuro.
-          </p>
-          <div class="premium-actions">
-            <a class="html-btn primary" href="/?public_page=plans">Prova gratis 30 giorni →</a>
-            <a class="html-btn secondary" href="#funzionalita">Guarda le funzionalità ▶</a>
-          </div>
-          <div class="hero-micro">
-            <span>✓ Nessuna carta di credito</span>
-            <span>✓ Attivazione immediata</span>
-            <span>✓ Assistenza dedicata</span>
-          </div>
-        </div>
-
-        <div class="mockup">
-          <div class="mock-browser">
-            <div class="browser-dots"><span></span><span></span><span></span></div>
-            <div class="mock-shell">
-              <div class="mock-side"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-              <div class="mock-main">
-                <h4>Dashboard</h4>
-                <div class="mock-stats">
-                  <div class="mock-stat"><small>Contratti attivi</small><strong>128</strong></div>
-                  <div class="mock-stat"><small>Scadenze</small><strong>24</strong></div>
-                  <div class="mock-stat"><small>Fatturato mese</small><strong>€48.750</strong></div>
-                  <div class="mock-stat"><small>Pagamenti</small><strong>€32.100</strong></div>
-                </div>
-                <div class="mock-panels">
-                  <div class="mock-panel"><b>Panoramica</b><div class="chart-line"></div></div>
-                  <div class="mock-panel mock-list"><b>Scadenze prossime</b><p><span>Contratto consulenza</span><span>15 mag</span></p><p><span>Manutenzione</span><span>18 mag</span></p><p><span>Servizio assistenza</span><span>22 mag</span></p></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="float-card contracts"><b>Contratti attivi</b><div class="mock-list"><p><span>Consulenza strategica</span><span class="pill green">Attivo</span></p><p><span>Manutenzione annuale</span><span class="pill green">Attivo</span></p><p><span>Servizio supporto</span><span class="pill green">Attivo</span></p></div></div>
-          <div class="float-card payments"><b>Pagamenti</b><div class="donut"><div>€32.100</div></div><small>Totale ricevuto</small></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="benefit-strip" id="funzionalita">
-      <div class="benefit-item"><div class="benefit-icon">🏢</div><div><b>Multi-azienda</b><small>Gestisci più realtà in modo sicuro.</small></div></div>
-      <div class="benefit-item"><div class="benefit-icon">👥</div><div><b>Ruoli e permessi</b><small>Accessi staff granulari.</small></div></div>
-      <div class="benefit-item"><div class="benefit-icon">📄</div><div><b>Contratti e pagamenti</b><small>Rate, acconti e saldi sempre chiari.</small></div></div>
-      <div class="benefit-item"><div class="benefit-icon">☁️</div><div><b>Accesso cloud</b><small>Online, responsive e sempre disponibile.</small></div></div>
-    </div>
-
-    <div class="premium-title">
-      <div class="iconbox">⚙️</div>
-      <div><h2>Funzionalità principali</h2><p>Tutto ciò che serve per gestire clienti, contratti, lavori e incassi.</p></div>
-    </div>
-    <div class="feature-grid">
-      <div class="feature-card-premium"><div class="ficon">👥</div><b>CRM clienti</b><p>Anagrafiche complete, note, storico attività e documenti sempre a portata di mano.</p></div>
-      <div class="feature-card-premium"><div class="ficon">📚</div><b>Contratti e scadenze</b><p>Gestisci contratti, rinnovi, scadenze e alert per non perdere nulla.</p></div>
-      <div class="feature-card-premium"><div class="ficon">📊</div><b>Lavori e report</b><p>Organizza lavori, attività e report dettagliati per cliente.</p></div>
-      <div class="feature-card-premium"><div class="ficon">💳</div><b>Pagamenti e rate</b><p>Monitora rate, acconti, saldi e residui in modo semplice.</p></div>
-      <div class="feature-card-premium"><div class="ficon">🧾</div><b>Fatture interne</b><p>Crea e archivia fatture interne, bozze, invii e storico.</p></div>
-      <div class="feature-card-premium"><div class="ficon">🛡️</div><b>Staff e permessi</b><p>Definisci ruoli e accessi per ogni membro del team.</p></div>
-      <div class="feature-card-premium"><div class="ficon">🏢</div><b>Multi-azienda SaaS</b><p>Ogni azienda ha dati isolati e gestibili da un unico portale.</p></div>
-      <div class="feature-card-premium"><div class="ficon">📈</div><b>Dashboard operative</b><p>KPI e cruscotti per decisioni più rapide e consapevoli.</p></div>
-    </div>
-
-    <div class="premium-title" id="come-funziona">
-      <div class="iconbox">🚀</div>
-      <div><h2>Come funziona</h2><p>Dal piano alla gestione operativa in pochi passaggi.</p></div>
-    </div>
-    <div class="steps-row">
-      <div class="step-card"><div class="step-num">1</div><b>Scegli il piano</b><p>Seleziona il pacchetto più adatto alle tue esigenze.</p></div>
-      <div class="step-card"><div class="step-num">2</div><b>Attiva 30 giorni gratis</b><p>Prova tutte le funzionalità senza impegno.</p></div>
-      <div class="step-card"><div class="step-num">3</div><b>Configura azienda</b><p>Imposta dati, logo, ruoli, staff e preferenze.</p></div>
-      <div class="step-card"><div class="step-num">4</div><b>Gestisci tutto</b><p>Clienti, contratti, scadenze, pagamenti e lavori.</p></div>
-    </div>
-
-    <div class="premium-title" id="pacchetti">
-      <div class="iconbox">💳</div>
-      <div><h2>Scegli il pacchetto</h2><p>Tutti i piani includono 30 giorni di prova gratuita.</p></div>
-    </div>
-    """)
-    st.markdown(hero_html, unsafe_allow_html=True)
-
-    render_public_plan_cards()
-
-    bottom_html = textwrap.dedent("""
-    <div class="benefit-strip">
-      <div class="benefit-item"><div class="benefit-icon">☁️</div><div><b>Multi-tenant SaaS</b><small>Piattaforma pensata per più aziende.</small></div></div>
-      <div class="benefit-item"><div class="benefit-icon">👥</div><div><b>Accessi staff con ruoli</b><small>Permessi e responsabilità chiare.</small></div></div>
-      <div class="benefit-item"><div class="benefit-icon">🔒</div><div><b>Dati azienda separati</b><small>Ogni azienda ha i propri dati isolati.</small></div></div>
-      <div class="benefit-item"><div class="benefit-icon">📱</div><div><b>Responsive</b><small>Desktop, tablet e smartphone.</small></div></div>
-    </div>
-
-    <div class="final-cta">
-      <div>
-        <h2>Porta online la gestione della tua azienda</h2>
-        <p>Semplifica contratti, clienti, lavori e pagamenti. Inizia oggi la prova gratuita di 30 giorni.</p>
-      </div>
-      <div class="premium-actions" style="margin:0">
-        <a class="html-btn secondary" href="/?public_page=plans">Inizia ora →</a>
-        <a class="html-btn primary" href="/?public_page=plans">Richiedi demo</a>
-      </div>
-    </div>
-
-    <div class="premium-title" id="faq">
-      <div class="iconbox">❓</div>
-      <div><h2>FAQ</h2><p>Risposte rapide alle domande più frequenti.</p></div>
-    </div>
-    <div class="feature-grid">
-      <div class="feature-card-premium"><b>È inclusa la prova gratuita?</b><p>Sì, tutti i piani hanno 30 giorni gratuiti.</p></div>
-      <div class="feature-card-premium"><b>È multi-azienda?</b><p>Sì, ogni azienda ha un ambiente separato con dati isolati.</p></div>
-      <div class="feature-card-premium"><b>Lo staff vede i pagamenti?</b><p>Solo se il ruolo assegnato prevede permessi finanziari.</p></div>
-      <div class="feature-card-premium"><b>Funziona online?</b><p>Sì, è pensato per desktop, tablet e mobile.</p></div>
-    </div>
-
-    <div class="premium-footer">
-      <div><b>CUBE Management Contract</b><p>Il gestionale online per aziende, consulenti e società di servizi.</p><small>© 2026 CUBE Management Contract</small></div>
-      <div><b>Prodotto</b><a>Funzionalità</a><a>Prezzi</a><a>Integrazioni</a><a>Changelog</a></div>
-      <div><b>Azienda</b><a>Chi siamo</a><a>Lavora con noi</a><a>Contatti</a><a>Partner</a></div>
-      <div><b>Supporto</b><a>FAQ</a><a>Guide e tutorial</a><a>Assistenza</a><a>Stato servizio</a></div>
-      <div><b>Legale</b><a>Termini di servizio</a><a>Privacy policy</a><a>Cookie policy</a><a>DPA</a></div>
-    </div>
-    """)
-    st.markdown(bottom_html, unsafe_allow_html=True)
-
+    render_public_html(cube_second_screen_html(), height=2420)
 
 def render_public_plan_cards():
     plans = get_public_plans()
