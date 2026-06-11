@@ -827,44 +827,713 @@ def users_for_tenant(active_only=True) -> pd.DataFrame:
 def css():
     st.markdown(f"""
     <style>
-    .stApp {{ background: linear-gradient(180deg,#f5f8fc 0%,#edf3f9 100%); }}
-    [data-testid="stSidebar"] {{ background: linear-gradient(180deg,#09192b 0%,#0e2742 100%); }}
+    :root {{
+      --cube-blue:#0f6dd0;
+      --cube-blue2:#0b5bb3;
+      --cube-navy:#061b3a;
+      --cube-dark:#071527;
+      --cube-text:#11243d;
+      --cube-muted:#60728c;
+      --cube-bg:#f4f8fd;
+      --cube-soft:#eaf3ff;
+      --cube-border:#dce8f5;
+      --cube-shadow:0 18px 45px rgba(8, 34, 73, .10);
+      --cube-radius:24px;
+    }}
+
+    .stApp {{
+      background:
+        radial-gradient(circle at 12% 6%, rgba(15,109,208,.13), transparent 28%),
+        radial-gradient(circle at 88% 10%, rgba(15,109,208,.10), transparent 26%),
+        linear-gradient(180deg,#ffffff 0%,#f4f8fd 34%,#eef5fc 100%);
+      color:var(--cube-text);
+    }}
+
+    .block-container {{
+      padding-top: 1.1rem !important;
+      max-width: 1440px !important;
+      padding-left: 2.4rem !important;
+      padding-right: 2.4rem !important;
+    }}
+
+    [data-testid="stSidebar"] {{
+      background:linear-gradient(180deg,#071527 0%,#0d2946 100%);
+      border-right:1px solid rgba(255,255,255,.08);
+    }}
     [data-testid="stSidebar"] * {{ color:white; }}
-    .block-container {{ padding-top:1rem!important; max-width:1500px!important; }}
-    .hero {{
-        background:linear-gradient(135deg,rgba(12,29,47,.06),rgba(15,109,208,.11));
-        border:1px solid #dbe6f3; border-radius:22px; padding:20px; margin-bottom:14px;
+
+    /* Public navbar */
+    .cube-topbar {{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:22px;
+      min-height:72px;
+      padding:12px 0 22px 0;
     }}
-    .hero h1 {{ margin:0; color:#0c1d2f; font-size:2.1rem; line-height:1.1; }}
-    .hero p {{ color:#64748b; margin:.4rem 0 0; }}
-    .badge {{ display:inline-block; background:#e9f2ff; color:#0f53a5; padding:5px 10px; border-radius:999px; font-weight:800; font-size:.82rem; }}
-    .section {{ display:flex; gap:12px; align-items:center; margin:18px 0 9px; }}
-    .section .ico {{ width:42px; min-width:42px; height:42px; border-radius:14px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#0f6dd0,#0c1d2f); color:white; box-shadow:0 8px 18px rgba(15,109,208,.22); }}
-    .section .ttl {{ font-size:1.55rem; font-weight:900; color:#17263c; line-height:1.15; }}
-    .section .cap {{ color:#66778d; font-size:.93rem; margin-top:2px; line-height:1.3; }}
-    .card {{ background:white; border:1px solid #dfe8f2; border-radius:18px; padding:15px 17px; box-shadow:0 8px 22px rgba(12,29,47,.06); min-height:96px; }}
-    .card .label {{ font-size:.85rem; color:#64748b; font-weight:800; }}
-    .card .value {{ font-size:1.25rem; color:#17263c; font-weight:900; word-break:break-word; }}
-    div[data-testid="stMetric"] {{ background:white; padding:16px; border-radius:18px; border:1px solid #dfe8f2; box-shadow:0 8px 22px rgba(12,29,47,.06); }}
-    div.stButton > button, div.stDownloadButton > button, div[data-testid="stFormSubmitButton"] button {{
-        border-radius:12px!important; background:linear-gradient(135deg,#0f6dd0,#0c5bb0)!important; color:white!important; border:0!important; font-weight:800!important; min-height:42px;
+    .cube-brand {{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      color:var(--cube-navy);
+      font-weight:950;
+      letter-spacing:-.02em;
     }}
-    div[data-testid="stDataFrame"] {{ background:white; border-radius:14px; border:1px solid #dfe8f2; padding:4px; overflow-x:auto!important; }}
-    @media (max-width:768px) {{
-        .block-container {{ padding-left:.7rem!important; padding-right:.7rem!important; max-width:100%!important; }}
-        div[data-testid="stHorizontalBlock"] {{ flex-direction:column!important; gap:.75rem!important; }}
-        div[data-testid="stHorizontalBlock"] > div {{ width:100%!important; min-width:100%!important; flex:1 1 100%!important; }}
-        .hero {{ border-radius:18px; padding:15px; }}
-        .hero h1 {{ font-size:1.45rem!important; }}
-        .hero p {{ font-size:.92rem!important; }}
-        .section .ttl {{ font-size:1.25rem!important; }}
-        .section .cap {{ font-size:.86rem!important; }}
-        div[data-testid="stMetricValue"] {{ font-size:1.65rem!important; }}
-        input, textarea, [data-baseweb="select"] {{ font-size:16px!important; }}
-        .stTabs [data-baseweb="tab-list"] {{ overflow-x:auto; white-space:nowrap; }}
+    .cube-logo-mark {{
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      color:white;
+      background:linear-gradient(135deg,#1b8cff,#084aa5);
+      box-shadow:0 12px 30px rgba(15,109,208,.26);
+      font-size:1.1rem;
+    }}
+    .cube-brand small {{
+      display:block;
+      color:var(--cube-muted);
+      font-size:.76rem;
+      margin-top:1px;
+      font-weight:800;
+    }}
+    .cube-nav {{
+      display:flex;
+      gap:24px;
+      align-items:center;
+      color:#40536d;
+      font-weight:850;
+      font-size:.94rem;
+    }}
+    .cube-nav span {{
+      cursor:default;
+    }}
+    .cube-top-actions {{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }}
+
+    /* Buttons */
+    div.stButton > button,
+    div.stDownloadButton > button,
+    div[data-testid="stFormSubmitButton"] button {{
+      border-radius:13px !important;
+      min-height:42px !important;
+      font-weight:900 !important;
+      border:1px solid rgba(15,109,208,.18) !important;
+      box-shadow:0 9px 22px rgba(15,109,208,.13) !important;
+      transition:all .18s ease !important;
+    }}
+    div.stButton > button:hover,
+    div.stDownloadButton > button:hover,
+    div[data-testid="stFormSubmitButton"] button:hover {{
+      transform:translateY(-1px);
+      box-shadow:0 13px 28px rgba(15,109,208,.20) !important;
+    }}
+
+    /* Premium public landing */
+    .premium-hero {{
+      position:relative;
+      overflow:hidden;
+      border-radius:34px;
+      padding:48px 48px 38px;
+      background:
+        radial-gradient(circle at 90% 12%, rgba(15,109,208,.17), transparent 30%),
+        linear-gradient(135deg,#ffffff 0%,#edf6ff 52%,#e8f3ff 100%);
+      border:1px solid var(--cube-border);
+      box-shadow:var(--cube-shadow);
+      margin-bottom:24px;
+    }}
+    .premium-hero-grid {{
+      display:grid;
+      grid-template-columns: 1.02fr .98fr;
+      gap:44px;
+      align-items:center;
+    }}
+    .premium-badge {{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:#eaf3ff;
+      color:#0f53a5;
+      border:1px solid #cfe2fa;
+      border-radius:999px;
+      padding:7px 12px;
+      font-size:.83rem;
+      font-weight:950;
+      margin-bottom:18px;
+    }}
+    .premium-hero h1 {{
+      font-size:clamp(2.4rem,4.1vw,4.8rem);
+      line-height:.98;
+      margin:0 0 18px;
+      letter-spacing:-.055em;
+      color:var(--cube-navy);
+    }}
+    .premium-hero h1 span {{
+      color:var(--cube-blue);
+    }}
+    .premium-hero p {{
+      color:#546982;
+      font-size:1.08rem;
+      line-height:1.72;
+      max-width:700px;
+      margin:0 0 24px;
+    }}
+    .premium-actions {{
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:22px;
+    }}
+    .html-btn {{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:9px;
+      border-radius:14px;
+      padding:14px 22px;
+      font-weight:950;
+      text-decoration:none;
+      border:1px solid transparent;
+    }}
+    .html-btn.primary {{
+      color:white;
+      background:linear-gradient(135deg,#0f6dd0,#0b58b8);
+      box-shadow:0 18px 38px rgba(15,109,208,.28);
+    }}
+    .html-btn.secondary {{
+      color:#0f53a5;
+      background:white;
+      border-color:#b8d1ef;
+      box-shadow:0 10px 25px rgba(8,34,73,.06);
+    }}
+    .hero-micro {{
+      display:flex;
+      gap:22px;
+      flex-wrap:wrap;
+      color:#41556f;
+      font-size:.88rem;
+      font-weight:850;
+    }}
+    .hero-micro span {{
+      display:inline-flex;
+      gap:7px;
+      align-items:center;
+    }}
+
+    .mockup {{
+      position:relative;
+      min-height:390px;
+    }}
+    .mock-browser {{
+      background:white;
+      border:1px solid #dce8f5;
+      border-radius:22px;
+      box-shadow:0 22px 55px rgba(8,34,73,.14);
+      padding:16px;
+      overflow:hidden;
+    }}
+    .browser-dots {{
+      display:flex;
+      gap:6px;
+      margin-bottom:12px;
+    }}
+    .browser-dots span {{
+      width:9px;
+      height:9px;
+      border-radius:999px;
+      background:#d9e6f4;
+    }}
+    .mock-shell {{
+      display:grid;
+      grid-template-columns:74px 1fr;
+      gap:14px;
+    }}
+    .mock-side {{
+      background:linear-gradient(180deg,#08244a,#06336f);
+      border-radius:18px;
+      min-height:285px;
+      padding:14px 9px;
+    }}
+    .mock-side i {{
+      display:block;
+      width:38px;
+      height:8px;
+      border-radius:999px;
+      background:rgba(255,255,255,.26);
+      margin:13px auto;
+    }}
+    .mock-side i:first-child {{
+      height:34px;
+      width:34px;
+      background:#fff;
+      opacity:.95;
+    }}
+    .mock-main h4 {{
+      margin:4px 0 12px;
+      color:var(--cube-navy);
+    }}
+    .mock-stats {{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin-bottom:12px;
+    }}
+    .mock-stat {{
+      border:1px solid #e2edf8;
+      border-radius:14px;
+      padding:10px;
+      background:#fbfdff;
+    }}
+    .mock-stat small {{
+      display:block;
+      color:#6b7e96;
+      font-weight:850;
+      font-size:.68rem;
+      margin-bottom:5px;
+    }}
+    .mock-stat strong {{
+      color:#061b3a;
+      font-size:1.05rem;
+    }}
+    .mock-panels {{
+      display:grid;
+      grid-template-columns:1.25fr .75fr;
+      gap:12px;
+    }}
+    .mock-panel {{
+      border:1px solid #e2edf8;
+      background:#fbfdff;
+      border-radius:16px;
+      padding:12px;
+      min-height:128px;
+    }}
+    .chart-line {{
+      height:92px;
+      border-radius:14px;
+      background:
+        linear-gradient(135deg, transparent 0 32%, rgba(15,109,208,.16) 32% 34%, transparent 34% 55%, rgba(15,109,208,.20) 55% 57%, transparent 57%),
+        repeating-linear-gradient(0deg,#eef5fc 0 1px,transparent 1px 22px);
+    }}
+    .mock-list p {{
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      font-size:.72rem;
+      color:#536982;
+      margin:8px 0;
+    }}
+    .float-card {{
+      position:absolute;
+      background:white;
+      border:1px solid #dce8f5;
+      border-radius:18px;
+      box-shadow:0 18px 42px rgba(8,34,73,.12);
+      padding:14px;
+    }}
+    .float-card.contracts {{
+      left:-26px;
+      bottom:5px;
+      width:245px;
+    }}
+    .float-card.payments {{
+      right:-24px;
+      bottom:25px;
+      width:230px;
+    }}
+    .donut {{
+      width:96px;
+      height:96px;
+      border-radius:999px;
+      margin:4px auto 8px;
+      background:conic-gradient(#0f6dd0 0 62%,#20bf78 62% 82%,#ffb020 82% 100%);
+      display:grid;
+      place-items:center;
+    }}
+    .donut div {{
+      width:62px;
+      height:62px;
+      border-radius:999px;
+      background:white;
+      display:grid;
+      place-items:center;
+      font-weight:950;
+      color:var(--cube-navy);
+      font-size:.82rem;
+    }}
+
+    .benefit-strip {{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:18px;
+      padding:20px;
+      border:1px solid var(--cube-border);
+      border-radius:26px;
+      background:rgba(255,255,255,.78);
+      box-shadow:0 12px 28px rgba(8,34,73,.06);
+      margin:22px 0;
+    }}
+    .benefit-item {{
+      display:flex;
+      gap:13px;
+      align-items:center;
+    }}
+    .benefit-icon {{
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      background:#eaf3ff;
+      color:#0f6dd0;
+      display:grid;
+      place-items:center;
+      font-size:1.45rem;
+      flex:0 0 auto;
+    }}
+    .benefit-item b {{
+      display:block;
+      color:var(--cube-navy);
+      margin-bottom:2px;
+    }}
+    .benefit-item small {{
+      color:#60728c;
+      line-height:1.35;
+      display:block;
+    }}
+
+    .premium-section {{
+      margin:30px 0;
+    }}
+    .premium-title {{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      margin:26px 0 16px;
+    }}
+    .premium-title .iconbox {{
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      color:white;
+      background:linear-gradient(135deg,#0f6dd0,#073b86);
+      box-shadow:0 12px 28px rgba(15,109,208,.22);
+    }}
+    .premium-title h2 {{
+      color:var(--cube-navy);
+      font-size:1.75rem;
+      margin:0;
+      line-height:1.05;
+      letter-spacing:-.03em;
+    }}
+    .premium-title p {{
+      margin:4px 0 0;
+      color:#60728c;
+    }}
+
+    .feature-grid {{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:16px;
+    }}
+    .feature-card-premium {{
+      background:white;
+      border:1px solid var(--cube-border);
+      border-radius:22px;
+      padding:20px;
+      box-shadow:0 12px 30px rgba(8,34,73,.06);
+      min-height:152px;
+    }}
+    .feature-card-premium .ficon {{
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      background:#eef6ff;
+      display:grid;
+      place-items:center;
+      color:#0f6dd0;
+      font-size:1.45rem;
+      margin-bottom:12px;
+    }}
+    .feature-card-premium b {{
+      color:var(--cube-navy);
+      display:block;
+      margin-bottom:7px;
+    }}
+    .feature-card-premium p {{
+      color:#60728c;
+      line-height:1.45;
+      font-size:.9rem;
+      margin:0;
+    }}
+
+    .steps-row {{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:18px;
+      align-items:stretch;
+    }}
+    .step-card {{
+      background:white;
+      border:1px solid var(--cube-border);
+      border-radius:22px;
+      padding:18px;
+      box-shadow:0 12px 28px rgba(8,34,73,.06);
+      position:relative;
+    }}
+    .step-num {{
+      width:30px;
+      height:30px;
+      border-radius:999px;
+      background:#0f6dd0;
+      color:white;
+      display:grid;
+      place-items:center;
+      font-weight:950;
+      margin-bottom:10px;
+    }}
+    .step-card b {{
+      color:var(--cube-navy);
+    }}
+    .step-card p {{
+      color:#60728c;
+      line-height:1.45;
+      margin:6px 0 0;
+      font-size:.9rem;
+    }}
+
+    .pricing-grid {{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:16px;
+      align-items:stretch;
+    }}
+    .pricing-card {{
+      position:relative;
+      background:white;
+      border:1px solid var(--cube-border);
+      border-radius:24px;
+      padding:22px 18px;
+      box-shadow:0 12px 30px rgba(8,34,73,.07);
+      text-align:center;
+      min-height:300px;
+      display:flex;
+      flex-direction:column;
+    }}
+    .pricing-card.featured {{
+      border:2px solid #0f6dd0;
+      box-shadow:0 18px 44px rgba(15,109,208,.17);
+      transform:translateY(-8px);
+    }}
+    .popular-ribbon {{
+      position:absolute;
+      top:-13px;
+      left:50%;
+      transform:translateX(-50%);
+      background:#0f6dd0;
+      color:white;
+      border-radius:999px;
+      padding:5px 14px;
+      font-size:.74rem;
+      font-weight:950;
+      white-space:nowrap;
+    }}
+    .pricing-icon {{
+      width:54px;
+      height:54px;
+      border-radius:18px;
+      background:#eef6ff;
+      color:#0f6dd0;
+      display:grid;
+      place-items:center;
+      font-size:1.55rem;
+      margin:0 auto 10px;
+    }}
+    .pricing-card h3 {{
+      margin:0 0 8px;
+      color:var(--cube-navy);
+      font-size:1.15rem;
+    }}
+    .price {{
+      font-size:2.05rem;
+      color:#061b3a;
+      font-weight:950;
+      letter-spacing:-.04em;
+      margin:8px 0 2px;
+    }}
+    .price small {{
+      font-size:.78rem;
+      color:#60728c;
+      font-weight:800;
+    }}
+    .pricing-card p {{
+      color:#60728c;
+      font-size:.88rem;
+      line-height:1.42;
+      margin:6px 0 14px;
+    }}
+    .pricing-card ul {{
+      list-style:none;
+      padding:0;
+      margin:0 0 16px;
+      color:#203653;
+      font-size:.87rem;
+      line-height:1.7;
+      text-align:left;
+    }}
+    .pricing-card li::before {{
+      content:"✓";
+      color:#0f6dd0;
+      font-weight:950;
+      margin-right:7px;
+    }}
+    .pricing-card .html-btn {{
+      margin-top:auto;
+      padding:10px 12px;
+      width:100%;
+    }}
+
+    .final-cta {{
+      margin:30px 0 0;
+      border-radius:28px;
+      background:
+        radial-gradient(circle at 8% 50%, rgba(255,255,255,.22), transparent 18%),
+        linear-gradient(135deg,#0f6dd0,#0742a0 70%,#062a66);
+      color:white;
+      padding:28px 34px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:24px;
+      box-shadow:0 18px 44px rgba(15,109,208,.24);
+    }}
+    .final-cta h2 {{
+      margin:0 0 6px;
+      font-size:1.85rem;
+      letter-spacing:-.035em;
+    }}
+    .final-cta p {{
+      margin:0;
+      color:#dcecff;
+    }}
+
+    .premium-footer {{
+      background:#061b3a;
+      color:#c9d7ea;
+      border-radius:28px 28px 0 0;
+      padding:34px;
+      margin-top:24px;
+      display:grid;
+      grid-template-columns:1.4fr repeat(4,1fr);
+      gap:24px;
+    }}
+    .premium-footer b {{
+      color:white;
+      display:block;
+      margin-bottom:10px;
+    }}
+    .premium-footer p, .premium-footer small {{
+      color:#c9d7ea;
+      line-height:1.55;
+    }}
+    .premium-footer a {{
+      display:block;
+      color:#d8e7fa;
+      text-decoration:none;
+      margin:7px 0;
+      font-size:.9rem;
+    }}
+
+    .card {{
+      background:white;
+      border:1px solid var(--cube-border);
+      border-radius:20px;
+      padding:18px;
+      box-shadow:0 12px 30px rgba(8,34,73,.06);
+    }}
+    .card .label {{ color:#60728c; font-weight:900; font-size:.85rem; }}
+    .card .value {{ color:var(--cube-navy); font-weight:950; font-size:1.35rem; }}
+
+    div[data-testid="stMetric"] {{
+      background:white;
+      padding:16px;
+      border-radius:18px;
+      border:1px solid var(--cube-border);
+      box-shadow:0 12px 28px rgba(8,34,73,.06);
+    }}
+    div[data-testid="stDataFrame"] {{
+      background:white;
+      border-radius:18px;
+      border:1px solid var(--cube-border);
+      padding:4px;
+      overflow-x:auto!important;
+      box-shadow:0 12px 28px rgba(8,34,73,.05);
+    }}
+
+    @media (max-width: 1200px) {{
+      .pricing-grid {{ grid-template-columns:repeat(2,1fr); }}
+      .feature-grid {{ grid-template-columns:repeat(2,1fr); }}
+      .benefit-strip {{ grid-template-columns:repeat(2,1fr); }}
+    }}
+
+    @media (max-width: 780px) {{
+      .block-container {{
+        padding-left:.8rem!important;
+        padding-right:.8rem!important;
+      }}
+      .cube-topbar {{
+        flex-wrap:wrap;
+      }}
+      .cube-nav {{
+        width:100%;
+        overflow:auto;
+        gap:14px;
+        font-size:.85rem;
+      }}
+      .premium-hero {{
+        padding:24px 18px;
+        border-radius:24px;
+      }}
+      .premium-hero-grid {{
+        grid-template-columns:1fr;
+        gap:24px;
+      }}
+      .premium-hero h1 {{
+        font-size:2.15rem;
+      }}
+      .mockup {{
+        min-height:auto;
+      }}
+      .mock-stats, .mock-panels, .benefit-strip, .feature-grid, .steps-row, .pricing-grid, .premium-footer {{
+        grid-template-columns:1fr;
+      }}
+      .float-card {{
+        position:static;
+        width:auto!important;
+        margin-top:12px;
+      }}
+      .final-cta {{
+        flex-direction:column;
+        align-items:flex-start;
+        padding:24px 18px;
+      }}
+      .html-btn {{
+        width:100%;
+      }}
+      div[data-testid="stHorizontalBlock"] {{
+        flex-direction:column!important;
+      }}
+      div[data-testid="stHorizontalBlock"] > div {{
+        width:100%!important;
+        min-width:100%!important;
+        flex:1 1 100%!important;
+      }}
     }}
     </style>
     """, unsafe_allow_html=True)
+
 
 def section(icon, title, cap=""):
     st.markdown(f"<div class='section'><div class='ico'>{icon}</div><div><div class='ttl'>{safe(title)}</div>{('<div class=cap>'+safe(cap)+'</div>') if cap else ''}</div></div>", unsafe_allow_html=True)
@@ -951,56 +1620,153 @@ def set_public_page(page: str, plan_name: str | None = None):
         st.session_state["selected_plan_name"] = plan_name
 
 def public_topbar():
-    c1, c2, c3 = st.columns([5, 1, 1])
+    st.markdown("""
+    <div class="cube-topbar">
+      <div class="cube-brand">
+        <div class="cube-logo-mark">▣</div>
+        <div><strong>CUBE</strong><small>Management Contract</small></div>
+      </div>
+      <div class="cube-nav">
+        <span>Funzionalità</span>
+        <span>Come funziona</span>
+        <span>Prezzi</span>
+        <span>FAQ</span>
+      </div>
+      <div class="cube-top-actions">
+    """, unsafe_allow_html=True)
+    c1, c2 = st.columns([1, 1])
     with c1:
-        st.markdown("### CUBE Management Contract")
-    with c2:
-        if st.button("Accedi", key="top_login"):
+        if st.button("Accedi", key="top_login", use_container_width=True):
             set_public_page("login")
             st.rerun()
-    with c3:
-        if st.button("Registrati", key="top_register"):
+    with c2:
+        if st.button("Registrati", key="top_register", use_container_width=True):
             set_public_page("plans")
             st.rerun()
+    st.markdown("</div></div>", unsafe_allow_html=True)
+
 
 def public_landing_page():
     css()
     public_topbar()
 
     st.markdown("""
-    <div class='hero'>
-        <span class='badge'>☁️ SaaS multi-azienda · 30 giorni gratis</span>
-        <h1>Il gestionale online per contratti, clienti, lavori e pagamenti</h1>
-        <p>
-            CUBE Management Contract è il portale SaaS pensato per aziende, consulenti, agenzie e società di servizi
-            che vogliono gestire contratti, CRM, scadenze, staff, documenti, rate, fatture interne e lavori in un unico sistema.
-        </p>
+    <div class="premium-hero">
+      <div class="premium-hero-grid">
+        <div>
+          <div class="premium-badge">☁️ Multi-azienda · 30 giorni gratis</div>
+          <h1>Il gestionale online per <span>contratti, clienti, lavori e pagamenti</span></h1>
+          <p>
+            CUBE Management Contract aiuta aziende, consulenti, agenzie e società di servizi a gestire
+            CRM, contratti, scadenze, staff, documenti, rate, pagamenti e fatture interne in un unico
+            sistema semplice e sicuro.
+          </p>
+          <div class="premium-actions">
+            <a class="html-btn primary" href="/?public_page=plans">Prova gratis 30 giorni →</a>
+            <a class="html-btn secondary" href="/?public_page=plans">Guarda le funzionalità ▶</a>
+          </div>
+          <div class="hero-micro">
+            <span>✓ Nessuna carta di credito</span>
+            <span>✓ Attivazione immediata</span>
+            <span>✓ Assistenza dedicata</span>
+          </div>
+        </div>
+
+        <div class="mockup">
+          <div class="mock-browser">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="mock-shell">
+              <div class="mock-side"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <div class="mock-main">
+                <h4>Dashboard</h4>
+                <div class="mock-stats">
+                  <div class="mock-stat"><small>Contratti attivi</small><strong>128</strong></div>
+                  <div class="mock-stat"><small>Scadenze</small><strong>24</strong></div>
+                  <div class="mock-stat"><small>Fatturato mese</small><strong>€48.750</strong></div>
+                  <div class="mock-stat"><small>Pagamenti</small><strong>€32.100</strong></div>
+                </div>
+                <div class="mock-panels">
+                  <div class="mock-panel"><b>Panoramica</b><div class="chart-line"></div></div>
+                  <div class="mock-panel mock-list"><b>Scadenze prossime</b><p><span>Contratto consulenza</span><span>15 mag</span></p><p><span>Manutenzione</span><span>18 mag</span></p><p><span>Servizio assistenza</span><span>22 mag</span></p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="float-card contracts"><b>Contratti attivi</b><div class="mock-list"><p><span>Consulenza strategica</span><span class="pill green">Attivo</span></p><p><span>Manutenzione annuale</span><span class="pill green">Attivo</span></p><p><span>Servizio supporto</span><span class="pill green">Attivo</span></p></div></div>
+          <div class="float-card payments"><b>Pagamenti</b><div class="donut"><div>€32.100</div></div><small>Totale ricevuto</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="benefit-strip">
+      <div class="benefit-item"><div class="benefit-icon">🏢</div><div><b>Multi-azienda</b><small>Gestisci più realtà in modo sicuro.</small></div></div>
+      <div class="benefit-item"><div class="benefit-icon">👥</div><div><b>Ruoli e permessi</b><small>Accessi staff granulari.</small></div></div>
+      <div class="benefit-item"><div class="benefit-icon">📄</div><div><b>Contratti e pagamenti</b><small>Rate, acconti e saldi sempre chiari.</small></div></div>
+      <div class="benefit-item"><div class="benefit-icon">☁️</div><div><b>Accesso cloud</b><small>Online, responsive e sempre disponibile.</small></div></div>
+    </div>
+
+    <div class="premium-title">
+      <div class="iconbox">⚙️</div>
+      <div><h2>Funzionalità principali</h2><p>Tutto ciò che serve per gestire clienti, contratti, lavori e incassi.</p></div>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card-premium"><div class="ficon">👥</div><b>CRM clienti</b><p>Anagrafiche complete, note, storico attività e documenti sempre a portata di mano.</p></div>
+      <div class="feature-card-premium"><div class="ficon">📚</div><b>Contratti e scadenze</b><p>Gestisci contratti, rinnovi, scadenze e alert per non perdere nulla.</p></div>
+      <div class="feature-card-premium"><div class="ficon">📊</div><b>Lavori e report</b><p>Organizza lavori, attività e report dettagliati per cliente.</p></div>
+      <div class="feature-card-premium"><div class="ficon">💳</div><b>Pagamenti e rate</b><p>Monitora rate, acconti, saldi e residui in modo semplice.</p></div>
+      <div class="feature-card-premium"><div class="ficon">🧾</div><b>Fatture interne</b><p>Crea e archivia fatture interne, bozze, invii e storico.</p></div>
+      <div class="feature-card-premium"><div class="ficon">🛡️</div><b>Staff e permessi</b><p>Definisci ruoli e accessi per ogni membro del team.</p></div>
+      <div class="feature-card-premium"><div class="ficon">🏢</div><b>Multi-azienda SaaS</b><p>Ogni azienda ha dati isolati e gestibili da un unico portale.</p></div>
+      <div class="feature-card-premium"><div class="ficon">📈</div><b>Dashboard operative</b><p>KPI e cruscotti per decisioni più rapide e consapevoli.</p></div>
+    </div>
+
+    <div class="premium-title">
+      <div class="iconbox">🚀</div>
+      <div><h2>Come funziona</h2><p>Dal piano alla gestione operativa in pochi passaggi.</p></div>
+    </div>
+    <div class="steps-row">
+      <div class="step-card"><div class="step-num">1</div><b>Scegli il piano</b><p>Seleziona il pacchetto più adatto alle tue esigenze.</p></div>
+      <div class="step-card"><div class="step-num">2</div><b>Attiva 30 giorni gratis</b><p>Prova tutte le funzionalità senza impegno.</p></div>
+      <div class="step-card"><div class="step-num">3</div><b>Configura azienda</b><p>Imposta dati, logo, ruoli, staff e preferenze.</p></div>
+      <div class="step-card"><div class="step-num">4</div><b>Gestisci tutto</b><p>Clienti, contratti, scadenze, pagamenti e lavori.</p></div>
+    </div>
+
+    <div class="premium-title">
+      <div class="iconbox">💳</div>
+      <div><h2>Scegli il pacchetto</h2><p>Tutti i piani includono 30 giorni di prova gratuita.</p></div>
     </div>
     """, unsafe_allow_html=True)
 
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        card("CRM clienti", "Anagrafiche, schede cliente, note, documenti e storico lavori.")
-    with c2:
-        card("Contratti e rate", "Contratti, scadenze, pagamenti, acconti, saldi e residui.")
-    with c3:
-        card("Staff e permessi", "Ruoli operativi, finanziari e amministrativi per ogni azienda.")
-
-    section("🚀", "Come funziona", "Ogni azienda ha il proprio spazio riservato, il proprio logo e i propri dati isolati.")
-    s1, s2, s3, s4 = st.columns(4)
-    s1.metric("1", "Scegli piano")
-    s2.metric("2", "30 giorni gratis")
-    s3.metric("3", "Configura azienda")
-    s4.metric("4", "Gestisci contratti")
-
-    section("💳", "Scegli il pacchetto", "Tutti i piani includono 30 giorni di prova gratuita.")
     render_public_plan_cards()
 
-    st.divider()
-    section("🔐", "Area riservata", "Hai già un account?")
-    if st.button("Vai al login", key="landing_login_bottom"):
-        set_public_page("login")
-        st.rerun()
+    st.markdown("""
+    <div class="benefit-strip">
+      <div class="benefit-item"><div class="benefit-icon">☁️</div><div><b>Multi-tenant SaaS</b><small>Piattaforma pensata per più aziende.</small></div></div>
+      <div class="benefit-item"><div class="benefit-icon">👥</div><div><b>Accessi staff con ruoli</b><small>Permessi e responsabilità chiare.</small></div></div>
+      <div class="benefit-item"><div class="benefit-icon">🔒</div><div><b>Dati azienda separati</b><small>Ogni azienda ha i propri dati isolati.</small></div></div>
+      <div class="benefit-item"><div class="benefit-icon">📱</div><div><b>Responsive</b><small>Desktop, tablet e smartphone.</small></div></div>
+    </div>
+
+    <div class="final-cta">
+      <div>
+        <h2>Porta online la gestione della tua azienda</h2>
+        <p>Semplifica contratti, clienti, lavori e pagamenti. Inizia oggi la prova gratuita di 30 giorni.</p>
+      </div>
+      <div class="premium-actions" style="margin:0">
+        <a class="html-btn secondary" href="/?public_page=plans">Inizia ora →</a>
+        <a class="html-btn primary" href="/?public_page=plans">Richiedi demo</a>
+      </div>
+    </div>
+
+    <div class="premium-footer">
+      <div><b>CUBE Management Contract</b><p>Il gestionale online per aziende, consulenti e società di servizi.</p><small>© 2026 CUBE Management Contract</small></div>
+      <div><b>Prodotto</b><a>Funzionalità</a><a>Prezzi</a><a>Integrazioni</a><a>Changelog</a></div>
+      <div><b>Azienda</b><a>Chi siamo</a><a>Lavora con noi</a><a>Contatti</a><a>Partner</a></div>
+      <div><b>Supporto</b><a>FAQ</a><a>Guide e tutorial</a><a>Assistenza</a><a>Stato servizio</a></div>
+      <div><b>Legale</b><a>Termini di servizio</a><a>Privacy policy</a><a>Cookie policy</a><a>DPA</a></div>
+    </div>
+    """, unsafe_allow_html=True)
+
 
 def render_public_plan_cards():
     plans = get_public_plans()
@@ -1008,41 +1774,60 @@ def render_public_plan_cards():
         st.info("I pacchetti saranno disponibili a breve.")
         return
 
-    cols = st.columns(min(4, max(1, len(plans))))
-    for idx, (_, p) in enumerate(plans.iterrows()):
-        with cols[idx % len(cols)]:
-            try:
-                funzioni = json.loads(p.get("funzioni_json") or "[]")
-            except Exception:
-                funzioni = []
-            price = float(p.get("prezzo_mensile") or 0)
-            st.markdown(f"""
-            <div class='card' style='min-height:280px'>
-                <div class='label'>Piano</div>
-                <div class='value'>{safe(p.get("nome"))}</div>
-                <p style='color:#64748b;margin:8px 0 4px'>30 giorni gratuiti</p>
-                <h2 style='margin:0;color:#0c1d2f'>{money(price)} <span style='font-size:.85rem;color:#64748b'>/mese</span></h2>
-                <p style='color:#64748b;font-size:.9rem'>
-                    Utenti totali: {safe(p.get("max_utenti"))}<br>
-                    Clienti/contratti gestibili: {safe(p.get("max_clienti"))}<br>
-                    Contratti: {safe(p.get("max_contratti"))}
-                </p>
-                <p style='color:#17263c;font-size:.88rem'>{safe(", ".join(funzioni[:5]))}</p>
-            </div>
-            """, unsafe_allow_html=True)
-            if st.button(f"Prova gratis {p.get('nome')}", key=f"select_plan_{int(p['id'])}"):
-                set_public_page("register", str(p.get("nome")))
-                st.rerun()
+    plan_icons = {
+        "Free": "👤",
+        "Starter": "🚀",
+        "Professional": "⭐",
+        "Business": "💼",
+        "Enterprise": "👑",
+    }
+    plan_notes = {
+        "Free": ["Fino a 3 contratti"],
+        "Starter": ["10 clienti / contratti", "1 staff aggiuntivo"],
+        "Professional": ["30 clienti", "3 staff aggiuntivi"],
+        "Business": ["100 clienti", "10 staff aggiuntivi"],
+        "Enterprise": ["Tutto illimitato", "Supporto prioritario"],
+    }
+
+    cards = []
+    for _, p in plans.iterrows():
+        name = str(p.get("nome") or "")
+        featured = " featured" if name == "Professional" else ""
+        ribbon = "<div class='popular-ribbon'>Più scelto</div>" if name == "Professional" else ""
+        price = money(float(p.get("prezzo_mensile") or 0))
+        items = "".join([f"<li>{safe(x)}</li>" for x in plan_notes.get(name, [])])
+        icon = plan_icons.get(name, "📦")
+        cards.append(f"""
+        <div class="pricing-card{featured}">
+          {ribbon}
+          <div class="pricing-icon">{icon}</div>
+          <h3>{safe(name)}</h3>
+          <div class="price">{price}<small> /mese</small></div>
+          <p>30 giorni gratuiti</p>
+          <ul>{items}</ul>
+          <a class="html-btn {'primary' if name == 'Professional' else 'secondary'}" href="/?public_page=register&plan={safe(name)}">{"Scegli piano" if name != "Free" else "Prova gratis"}</a>
+        </div>
+        """)
+
+    st.markdown("<div class='pricing-grid'>" + "\n".join(cards) + "</div>", unsafe_allow_html=True)
+
 
 def public_plans_page():
     css()
     public_topbar()
-    section("💳", "Pacchetti CUBE", "Scegli il piano. Tutti includono 30 giorni gratuiti di prova.")
+    st.markdown("""
+    <div class="premium-hero" style="padding:34px 40px">
+      <div class="premium-badge">💳 Pacchetti · 30 giorni gratuiti</div>
+      <h1 style="font-size:3rem">Scegli il piano più adatto alla tua azienda</h1>
+      <p>Tutti i pacchetti includono 30 giorni gratuiti. Nessun vincolo: puoi cambiare piano in qualsiasi momento.</p>
+    </div>
+    """, unsafe_allow_html=True)
     render_public_plan_cards()
-    st.divider()
+    st.markdown("<br>", unsafe_allow_html=True)
     if st.button("Torna alla home", key="back_home_from_plans"):
         set_public_page("home")
         st.rerun()
+
 
 def public_login_page():
     css()

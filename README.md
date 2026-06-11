@@ -1,3 +1,14 @@
+# CUBE Management Contract - progetto completo con template grafico premium (senza Shopify)
+
+Questa build usa solo il modello grafico premium come riferimento estetico.
+Non utilizza Shopify.
+
+## Struttura
+- Root: portale SaaS / Streamlit / Render
+- public_site/: sito web pubblico completo in HTML/CSS/JS
+
+---
+
 # CUBE Management Contract SaaS
 
 Versione SaaS multi-azienda / multi-tenant.
