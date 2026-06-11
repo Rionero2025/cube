@@ -1659,7 +1659,7 @@ def public_topbar():
         </div>
       </div>
       <div class="cube-nav">
-        <a href="#funzionalita">Funzionalità</a>
+        <a href="/?public_page=features">Funzionalità</a>
         <a href="#come-funziona">Come funziona</a>
         <a href="#pacchetti">Prezzi</a>
         <a href="#faq">FAQ</a>
@@ -1910,6 +1910,323 @@ def public_register_page():
             st.success("Registrazione completata. Ora puoi accedere con l'utente admin creato.")
             set_public_page("login")
 
+
+def cube_features_page_html() -> str:
+    return r"""
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{
+  --blue:#0f6dd0;
+  --blue2:#0a56bd;
+  --navy:#061b3a;
+  --text:#122541;
+  --muted:#60728c;
+  --line:#dbe8f6;
+  --soft:#eef6ff;
+  --green:#20bf78;
+  --orange:#ffb020;
+  --shadow:0 18px 45px rgba(8,34,73,.10);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:Inter, Manrope, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 86% 5%, rgba(15,109,208,.08), transparent 24%),
+    linear-gradient(180deg,#fff 0%,#f7fbff 44%,#eef5fc 100%);
+}
+a{text-decoration:none}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+.header{
+  height:72px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid rgba(219,232,246,.72);
+  background:rgba(255,255,255,.88);
+  position:sticky;
+  top:0;
+  z-index:20;
+  backdrop-filter:blur(14px);
+}
+.brand{display:flex;align-items:center;gap:11px;color:var(--navy)}
+.brand-mark{
+  width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,#1689ff,#0a4297);
+  box-shadow:0 10px 24px rgba(15,109,208,.22);
+  font-weight:900;
+}
+.brand strong{font-size:1.65rem;letter-spacing:-.055em;line-height:1}
+.brand small{display:inline-block;margin-left:6px;color:#203856;font-weight:700;font-size:.88rem;line-height:1.05}
+.nav{display:flex;align-items:center;gap:34px;font-weight:800;color:#29435f;font-size:.94rem}
+.nav a{color:#29435f}
+.actions{display:flex;gap:12px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:12px;
+  padding:12px 20px;font-weight:900;border:1px solid transparent;
+  transition:.16s ease;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn.primary{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:0 14px 30px rgba(15,109,208,.22)}
+.btn.secondary{background:#fff;color:#0f53a5;border-color:#bcd3ee}
+.hero{
+  padding:52px 0 34px;
+}
+.hero-card{
+  border-radius:30px;
+  padding:48px;
+  background:
+    radial-gradient(circle at 82% 16%, rgba(15,109,208,.18), transparent 30%),
+    linear-gradient(135deg,#fff 0%,#edf6ff 58%,#e7f2ff 100%);
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  display:grid;
+  grid-template-columns:.9fr 1.1fr;
+  gap:44px;
+  align-items:center;
+}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;background:#eaf3ff;color:#0f53a5;border:1px solid #cfe2fa;border-radius:999px;
+  padding:7px 12px;font-size:.82rem;font-weight:900;margin-bottom:18px
+}
+h1{
+  margin:0 0 18px;
+  font-size:clamp(2.7rem,4.7vw,4.6rem);
+  line-height:.98;
+  color:var(--navy);
+  letter-spacing:-.06em;
+}
+h1 span{color:var(--blue)}
+.lead{font-size:1.08rem;line-height:1.7;color:#526982;margin:0 0 25px;max-width:660px}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap}
+.hero-visual{position:relative;min-height:360px}
+.screen{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:16px;
+  box-shadow:0 26px 62px rgba(8,34,73,.13);
+}
+.screen-top{display:flex;gap:7px;margin-bottom:12px}
+.screen-top span{width:10px;height:10px;border-radius:50%;background:#d7e5f4}
+.screen-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.module-preview{
+  border:1px solid #e2edf8;background:#fbfdff;border-radius:18px;padding:16px;min-height:112px
+}
+.module-preview small{display:block;color:#60728c;font-weight:800;margin-bottom:5px}
+.module-preview b{color:var(--navy);font-size:1.2rem}
+.module-preview p{color:#60728c;font-size:.82rem;line-height:1.4;margin:8px 0 0}
+.chart{
+  height:92px;border-radius:14px;
+  background:
+    linear-gradient(150deg,transparent 0 25%,rgba(15,109,208,.18) 25% 27%,transparent 27% 48%,rgba(25,169,220,.28) 48% 51%,transparent 51%),
+    repeating-linear-gradient(0deg,#edf5fc 0 1px,transparent 1px 22px);
+}
+.section{padding:40px 0}
+.section-head{display:flex;align-items:flex-start;gap:16px;margin-bottom:22px}
+.icon-badge{width:52px;height:52px;border-radius:17px;background:linear-gradient(135deg,var(--blue),#073b86);display:grid;place-items:center;color:white;font-size:1.55rem;box-shadow:0 12px 30px rgba(15,109,208,.22);flex:0 0 auto}
+.section-head h2{margin:0;color:var(--navy);font-size:2.35rem;line-height:1.05;letter-spacing:-.04em}
+.section-head p{margin:6px 0 0;color:var(--muted);line-height:1.55}
+.modules-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.module-card{
+  background:#fff;border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 14px 32px rgba(8,34,73,.06);
+  min-height:260px;
+}
+.module-icon{width:56px;height:56px;border-radius:18px;background:#eef6ff;color:var(--blue);display:grid;place-items:center;font-size:1.65rem;margin-bottom:14px}
+.module-card h3{margin:0 0 9px;color:var(--navy);font-size:1.25rem}
+.module-card p{margin:0 0 14px;color:#60728c;line-height:1.55;font-size:.94rem}
+.module-card ul{margin:0;padding:0;list-style:none;color:#2b4564;font-size:.9rem;line-height:1.72}
+.module-card li:before{content:"✓";color:var(--blue);font-weight:900;margin-right:8px}
+.alt{background:linear-gradient(180deg,transparent,rgba(234,243,255,.72),transparent)}
+.workflow{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:18px
+}
+.flow-card{
+  background:#fff;border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 12px 28px rgba(8,34,73,.05)
+}
+.flow-num{width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:900;margin-bottom:12px}
+.flow-card h3{margin:0 0 7px;color:var(--navy)}
+.flow-card p{margin:0;color:#60728c;line-height:1.5;font-size:.92rem}
+.table-card{
+  background:#fff;border:1px solid var(--line);border-radius:24px;box-shadow:0 14px 32px rgba(8,34,73,.06);overflow:hidden
+}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:18px;border-bottom:1px solid var(--line);color:#2c4563}
+th{background:#f4f9ff;color:var(--navy);font-weight:900}
+tr:last-child td{border-bottom:0}
+.check{color:var(--green);font-weight:900}
+.no{color:#9aa9ba}
+.cta{
+  display:flex;align-items:center;justify-content:space-between;gap:22px;
+  background:linear-gradient(135deg,#0f6dd0,#0742a0 72%,#062a66);border-radius:24px;padding:30px;color:#fff;
+  box-shadow:0 18px 44px rgba(15,109,208,.24);
+}
+.cta h2{margin:0 0 6px;font-size:2rem;letter-spacing:-.04em}
+.cta p{margin:0;color:#dcecff}
+.footer{background:#061b3a;color:#d1def0;margin-top:40px;padding:28px 0}
+.footer-grid{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:24px}
+.footer b{color:#fff;display:block;margin-bottom:8px}
+.footer p,.footer a{color:#d1def0;font-size:.88rem;line-height:1.5}
+.footer a{display:block;margin:7px 0}
+@media(max-width:1050px){
+  .hero-card{grid-template-columns:1fr}
+  .modules-grid,.workflow{grid-template-columns:repeat(2,1fr)}
+  .footer-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:700px){
+  .nav{display:none}
+  .hero-card{padding:26px}
+  h1{font-size:2.35rem}
+  .modules-grid,.workflow,.screen-grid,.footer-grid{grid-template-columns:1fr}
+  .cta{flex-direction:column;align-items:flex-start}
+  .btn{width:100%}
+}
+</style>
+</head>
+<body>
+  <header class="header">
+    <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:22px">
+      <a class="brand" target="_parent" href="/?public_page=home">
+        <div class="brand-mark">⬢</div>
+        <div><strong>CUBE</strong><small>Management<br>Contract</small></div>
+      </a>
+      <nav class="nav">
+        <a target="_parent" href="/?public_page=features">Funzionalità</a>
+        <a target="_parent" href="/?public_page=home">Come funziona</a>
+        <a target="_parent" href="/?public_page=plans">Prezzi</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <div class="actions">
+        <a class="btn secondary" target="_parent" href="/?public_page=login">Accedi</a>
+        <a class="btn primary" target="_parent" href="/?public_page=plans">Registrati</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero wrap">
+      <div class="hero-card">
+        <div>
+          <div class="badge">⚙️ Funzionalità complete</div>
+          <h1>Tutto quello che puoi gestire con <span>CUBE</span></h1>
+          <p class="lead">Un solo gestionale per tenere sotto controllo clienti, contratti, scadenze, lavori, documenti, pagamenti, fatture interne, staff e aziende registrate nel portale SaaS.</p>
+          <div class="hero-actions">
+            <a class="btn primary" target="_parent" href="/?public_page=plans">Prova gratis 30 giorni →</a>
+            <a class="btn secondary" href="#moduli">Scopri i moduli</a>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="screen">
+            <div class="screen-top"><span></span><span></span><span></span></div>
+            <div class="screen-grid">
+              <div class="module-preview"><small>CRM clienti</small><b>342</b><p>Clienti, note, storico e documenti.</p></div>
+              <div class="module-preview"><small>Contratti attivi</small><b>128</b><p>Scadenze, rinnovi, importi e stati.</p></div>
+              <div class="module-preview"><small>Pagamenti</small><b>€32.100</b><p>Acconti, saldi e rate incassate.</p></div>
+              <div class="module-preview"><small>Andamento</small><div class="chart"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="moduli" class="section wrap">
+      <div class="section-head">
+        <div class="icon-badge">📦</div>
+        <div><h2>Moduli principali</h2><p>Ogni modulo è collegato agli altri: il cliente ha i suoi contratti, i contratti hanno rate e documenti, i lavori hanno report e feedback.</p></div>
+      </div>
+      <div class="modules-grid">
+        <article class="module-card"><div class="module-icon">👥</div><h3>CRM clienti</h3><p>Gestisci l’intera anagrafica cliente con dati fiscali e operativi.</p><ul><li>Ragione sociale, P.IVA, CF, PEC, SDI</li><li>Referenti, telefono, email, sede</li><li>Note CRM e stato cliente</li><li>Scheda cliente con storico completo</li></ul></article>
+        <article class="module-card"><div class="module-icon">📚</div><h3>Contratti</h3><p>Crea, importa e controlla ogni contratto aziendale.</p><ul><li>Decorrenza e scadenza</li><li>Importo netto, IVA e totale</li><li>Servizi inclusi</li><li>Responsabile staff assegnato</li></ul></article>
+        <article class="module-card"><div class="module-icon">💶</div><h3>Pagamenti e rate</h3><p>Monitora incassi, scadenze e residui in modo chiaro.</p><ul><li>Rate mensili o periodiche</li><li>Acconti e saldi</li><li>Residuo da incassare</li><li>Allegati pagamento</li></ul></article>
+        <article class="module-card"><div class="module-icon">🧾</div><h3>Fatture interne</h3><p>Gestisci documenti interni e storico fatture.</p><ul><li>Numerazione progressiva</li><li>PDF di cortesia</li><li>Stato bozza/inviata/pagata</li><li>Operatore che emette</li></ul></article>
+        <article class="module-card"><div class="module-icon">🛠️</div><h3>Lavori e attività</h3><p>Registra le attività operative svolte per ogni cliente.</p><ul><li>Data e orario facoltativo</li><li>Tipo lavoro e stato</li><li>Descrizione e note interne</li><li>Report attività</li></ul></article>
+        <article class="module-card"><div class="module-icon">📎</div><h3>Documenti</h3><p>Archivia allegati, ricevute, contratti firmati e file di lavoro.</p><ul><li>File per cliente</li><li>File per contratto</li><li>PDF, immagini, docx, xlsx</li><li>Storico documentale</li></ul></article>
+        <article class="module-card"><div class="module-icon">💬</div><h3>Feedback</h3><p>Raccogli valutazioni e comunicazioni dei clienti.</p><ul><li>Feedback WhatsApp/email/telefonata</li><li>Valutazione numerica</li><li>Allegati feedback</li><li>Note interne</li></ul></article>
+        <article class="module-card"><div class="module-icon">👤</div><h3>Staff e permessi</h3><p>Definisci ruoli e accessi per ogni membro del team.</p><ul><li>Admin azienda</li><li>Manager operativo</li><li>Gestione finanziaria</li><li>Operativo base/avanzato</li></ul></article>
+        <article class="module-card"><div class="module-icon">🏢</div><h3>SaaS multi-azienda</h3><p>Gestisci più aziende registrate nella stessa piattaforma.</p><ul><li>Tenant separati</li><li>Logo e dati aziendali</li><li>Piani e abbonamenti</li><li>Super Admin riservato</li></ul></article>
+      </div>
+    </section>
+
+    <section class="section alt">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="icon-badge">🚀</div>
+          <div><h2>Flusso operativo</h2><p>Dalla registrazione al controllo completo della gestione.</p></div>
+        </div>
+        <div class="workflow">
+          <div class="flow-card"><div class="flow-num">1</div><h3>Configura azienda</h3><p>Inserisci dati aziendali, logo, PEC, SDI e piano scelto.</p></div>
+          <div class="flow-card"><div class="flow-num">2</div><h3>Crea clienti</h3><p>Registra anagrafiche e organizza il CRM.</p></div>
+          <div class="flow-card"><div class="flow-num">3</div><h3>Gestisci contratti</h3><p>Inserisci contratti, importi, rate e scadenze.</p></div>
+          <div class="flow-card"><div class="flow-num">4</div><h3>Monitora lavori</h3><p>Controlla attività, feedback, pagamenti e report.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap">
+      <div class="section-head">
+        <div class="icon-badge">🔐</div>
+        <div><h2>Permessi e visibilità</h2><p>Ogni ruolo vede solo le aree autorizzate.</p></div>
+      </div>
+      <div class="table-card">
+        <table>
+          <thead><tr><th>Area</th><th>Super Admin</th><th>Admin Azienda</th><th>Manager</th><th>Finanza</th><th>Operativo</th></tr></thead>
+          <tbody>
+            <tr><td>Aziende SaaS</td><td class="check">Completo</td><td class="no">No</td><td class="no">No</td><td class="no">No</td><td class="no">No</td></tr>
+            <tr><td>Clienti CRM</td><td class="check">Tutti</td><td class="check">Azienda</td><td class="check">Azienda</td><td class="check">Azienda</td><td class="check">Assegnati</td></tr>
+            <tr><td>Contratti</td><td class="check">Tutti</td><td class="check">Completo</td><td class="check">Operativo</td><td class="no">No</td><td class="no">No</td></tr>
+            <tr><td>Pagamenti</td><td class="check">Tutti</td><td class="check">Completo</td><td class="no">No</td><td class="check">Completo</td><td class="no">No</td></tr>
+            <tr><td>Lavori</td><td class="check">Tutti</td><td class="check">Completo</td><td class="check">Completo</td><td class="no">No</td><td class="check">Assegnati</td></tr>
+            <tr><td>Fatture</td><td class="check">Tutte</td><td class="check">Completo</td><td class="no">No</td><td class="check">Completo</td><td class="no">No</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="faq" class="section wrap">
+      <div class="section-head">
+        <div class="icon-badge">❓</div>
+        <div><h2>Domande frequenti sulle funzionalità</h2><p>Risposte rapide prima di iniziare.</p></div>
+      </div>
+      <div class="modules-grid">
+        <article class="module-card"><h3>Posso importare contratti già firmati?</h3><p>Sì, puoi allegare documenti firmati e file collegati al cliente o al contratto.</p></article>
+        <article class="module-card"><h3>Il piano Free ha limiti?</h3><p>Sì, consente la gestione di 3 contratti.</p></article>
+        <article class="module-card"><h3>Gli operatori vedono i pagamenti?</h3><p>No, solo i ruoli autorizzati possono vedere aree economiche.</p></article>
+      </div>
+    </section>
+
+    <section class="wrap cta">
+      <div>
+        <h2>Vuoi provare tutte le funzionalità?</h2>
+        <p>Attiva il tuo account e configura la tua azienda in pochi minuti.</p>
+      </div>
+      <div class="hero-actions" style="margin:0">
+        <a class="btn secondary" target="_parent" href="/?public_page=plans">Scegli piano</a>
+        <a class="btn primary" target="_parent" href="/?public_page=register&plan=Professional">Prova gratis</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="wrap footer-grid">
+        <div><b>CUBE Management Contract</b><p>Gestionale SaaS per contratti, clienti, lavori, documenti, pagamenti e staff.</p></div>
+        <div><b>Prodotto</b><a>Funzioni</a><a>Prezzi</a><a>Integrazioni</a></div>
+        <div><b>Supporto</b><a>FAQ</a><a>Guide</a><a>Assistenza</a></div>
+        <div><b>Legale</b><a>Privacy</a><a>Termini</a><a>Cookie</a></div>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>
+"""
+
+def public_features_page():
+    render_public_html(cube_features_page_html(), height=2500)
+
 def public_router():
     # Permette link diretti tipo:
     # /?public_page=login
@@ -1933,6 +2250,8 @@ def public_router():
         public_plans_page()
     elif page == "register":
         public_register_page()
+    elif page in ["features", "funzionalita"]:
+        public_features_page()
     else:
         public_landing_page()
 
