@@ -1,5 +1,6 @@
 
 import os
+import textwrap
 import re
 import json
 import hmac
@@ -869,7 +870,8 @@ def css():
       justify-content:space-between;
       gap:22px;
       min-height:72px;
-      padding:12px 0 22px 0;
+      padding:10px 0 18px 0;
+      margin-bottom:4px;
     }}
     .cube-brand {{
       display:flex;
@@ -878,9 +880,19 @@ def css():
       color:var(--cube-navy);
       font-weight:950;
       letter-spacing:-.02em;
+      text-decoration:none;
+    }}
+    .cube-logo-box {{
+      width:50px;
+      height:50px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#f0f7ff,#dbeaff);
+      border:1px solid #d2e3f7;
     }}
     .cube-logo-mark {{
-      width:42px;
+      width:36px;
       height:42px;
       border-radius:14px;
       display:grid;
@@ -890,21 +902,32 @@ def css():
       box-shadow:0 12px 30px rgba(15,109,208,.26);
       font-size:1.1rem;
     }}
-    .cube-brand small {{
+    .cube-brand-copy strong {{
       display:block;
-      color:var(--cube-muted);
-      font-size:.76rem;
-      margin-top:1px;
+      font-size:2rem;
+      line-height:.9;
+      letter-spacing:-.06em;
+      color:#0a1f45;
+    }}
+    .cube-brand-copy small {{
+      display:block;
+      color:#394f6d;
+      font-size:.9rem;
+      margin-top:2px;
       font-weight:800;
+      line-height:1.05;
     }}
     .cube-nav {{
       display:flex;
-      gap:24px;
+      gap:28px;
       align-items:center;
       color:#40536d;
       font-weight:850;
       font-size:.94rem;
+      margin-left:auto;
+      margin-right:10px;
     }}
+    .cube-nav a {{ text-decoration:none; color:#40536d; }}
     .cube-nav span {{
       cursor:default;
     }}
@@ -937,7 +960,7 @@ def css():
       position:relative;
       overflow:hidden;
       border-radius:34px;
-      padding:48px 48px 38px;
+      padding:42px 38px 34px;
       background:
         radial-gradient(circle at 90% 12%, rgba(15,109,208,.17), transparent 30%),
         linear-gradient(135deg,#ffffff 0%,#edf6ff 52%,#e8f3ff 100%);
@@ -947,7 +970,7 @@ def css():
     }}
     .premium-hero-grid {{
       display:grid;
-      grid-template-columns: 1.02fr .98fr;
+      grid-template-columns: .96fr 1.04fr;
       gap:44px;
       align-items:center;
     }}
@@ -1009,6 +1032,8 @@ def css():
       border-color:#b8d1ef;
       box-shadow:0 10px 25px rgba(8,34,73,.06);
     }}
+    .html-btn.compact {{ padding:11px 20px; min-width:120px; }}
+
     .hero-micro {{
       display:flex;
       gap:22px;
@@ -1025,7 +1050,8 @@ def css():
 
     .mockup {{
       position:relative;
-      min-height:390px;
+      min-height:470px;
+      padding-left:20px;
     }}
     .mock-browser {{
       background:white;
@@ -1167,8 +1193,8 @@ def css():
     .benefit-strip {{
       display:grid;
       grid-template-columns:repeat(4,1fr);
-      gap:18px;
-      padding:20px;
+      gap:14px;
+      padding:14px;
       border:1px solid var(--cube-border);
       border-radius:26px;
       background:rgba(255,255,255,.78);
@@ -1307,7 +1333,7 @@ def css():
     .pricing-grid {{
       display:grid;
       grid-template-columns:repeat(5,1fr);
-      gap:16px;
+      gap:18px;
       align-items:stretch;
     }}
     .pricing-card {{
@@ -1318,14 +1344,14 @@ def css():
       padding:22px 18px;
       box-shadow:0 12px 30px rgba(8,34,73,.07);
       text-align:center;
-      min-height:300px;
+      min-height:346px;
       display:flex;
       flex-direction:column;
     }}
     .pricing-card.featured {{
       border:2px solid #0f6dd0;
       box-shadow:0 18px 44px rgba(15,109,208,.17);
-      transform:translateY(-8px);
+      transform:translateY(-12px);
     }}
     .popular-ribbon {{
       position:absolute;
@@ -1620,37 +1646,36 @@ def set_public_page(page: str, plan_name: str | None = None):
         st.session_state["selected_plan_name"] = plan_name
 
 def public_topbar():
-    st.markdown("""
+    st.markdown(textwrap.dedent("""
     <div class="cube-topbar">
       <div class="cube-brand">
-        <div class="cube-logo-mark">▣</div>
-        <div><strong>CUBE</strong><small>Management Contract</small></div>
+        <div class="cube-logo-box">
+          <div class="cube-logo-mark">⬢</div>
+        </div>
+        <div class="cube-brand-copy">
+          <strong>CUBE</strong>
+          <small>Management Contract</small>
+        </div>
       </div>
       <div class="cube-nav">
-        <span>Funzionalità</span>
-        <span>Come funziona</span>
-        <span>Prezzi</span>
-        <span>FAQ</span>
+        <a href="#funzionalita">Funzionalità</a>
+        <a href="#come-funziona">Come funziona</a>
+        <a href="#pacchetti">Prezzi</a>
+        <a href="#faq">FAQ</a>
       </div>
       <div class="cube-top-actions">
-    """, unsafe_allow_html=True)
-    c1, c2 = st.columns([1, 1])
-    with c1:
-        if st.button("Accedi", key="top_login", use_container_width=True):
-            set_public_page("login")
-            st.rerun()
-    with c2:
-        if st.button("Registrati", key="top_register", use_container_width=True):
-            set_public_page("plans")
-            st.rerun()
-    st.markdown("</div></div>", unsafe_allow_html=True)
+        <a class="html-btn secondary compact" href="/?public_page=login">Accedi</a>
+        <a class="html-btn primary compact" href="/?public_page=plans">Registrati</a>
+      </div>
+    </div>
+    """), unsafe_allow_html=True)
 
 
 def public_landing_page():
     css()
     public_topbar()
 
-    st.markdown("""
+    hero_html = textwrap.dedent("""
     <div class="premium-hero">
       <div class="premium-hero-grid">
         <div>
@@ -1663,7 +1688,7 @@ def public_landing_page():
           </p>
           <div class="premium-actions">
             <a class="html-btn primary" href="/?public_page=plans">Prova gratis 30 giorni →</a>
-            <a class="html-btn secondary" href="/?public_page=plans">Guarda le funzionalità ▶</a>
+            <a class="html-btn secondary" href="#funzionalita">Guarda le funzionalità ▶</a>
           </div>
           <div class="hero-micro">
             <span>✓ Nessuna carta di credito</span>
@@ -1698,7 +1723,7 @@ def public_landing_page():
       </div>
     </div>
 
-    <div class="benefit-strip">
+    <div class="benefit-strip" id="funzionalita">
       <div class="benefit-item"><div class="benefit-icon">🏢</div><div><b>Multi-azienda</b><small>Gestisci più realtà in modo sicuro.</small></div></div>
       <div class="benefit-item"><div class="benefit-icon">👥</div><div><b>Ruoli e permessi</b><small>Accessi staff granulari.</small></div></div>
       <div class="benefit-item"><div class="benefit-icon">📄</div><div><b>Contratti e pagamenti</b><small>Rate, acconti e saldi sempre chiari.</small></div></div>
@@ -1720,7 +1745,7 @@ def public_landing_page():
       <div class="feature-card-premium"><div class="ficon">📈</div><b>Dashboard operative</b><p>KPI e cruscotti per decisioni più rapide e consapevoli.</p></div>
     </div>
 
-    <div class="premium-title">
+    <div class="premium-title" id="come-funziona">
       <div class="iconbox">🚀</div>
       <div><h2>Come funziona</h2><p>Dal piano alla gestione operativa in pochi passaggi.</p></div>
     </div>
@@ -1731,15 +1756,16 @@ def public_landing_page():
       <div class="step-card"><div class="step-num">4</div><b>Gestisci tutto</b><p>Clienti, contratti, scadenze, pagamenti e lavori.</p></div>
     </div>
 
-    <div class="premium-title">
+    <div class="premium-title" id="pacchetti">
       <div class="iconbox">💳</div>
       <div><h2>Scegli il pacchetto</h2><p>Tutti i piani includono 30 giorni di prova gratuita.</p></div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
+    st.markdown(hero_html, unsafe_allow_html=True)
 
     render_public_plan_cards()
 
-    st.markdown("""
+    bottom_html = textwrap.dedent("""
     <div class="benefit-strip">
       <div class="benefit-item"><div class="benefit-icon">☁️</div><div><b>Multi-tenant SaaS</b><small>Piattaforma pensata per più aziende.</small></div></div>
       <div class="benefit-item"><div class="benefit-icon">👥</div><div><b>Accessi staff con ruoli</b><small>Permessi e responsabilità chiare.</small></div></div>
@@ -1758,6 +1784,17 @@ def public_landing_page():
       </div>
     </div>
 
+    <div class="premium-title" id="faq">
+      <div class="iconbox">❓</div>
+      <div><h2>FAQ</h2><p>Risposte rapide alle domande più frequenti.</p></div>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card-premium"><b>È inclusa la prova gratuita?</b><p>Sì, tutti i piani hanno 30 giorni gratuiti.</p></div>
+      <div class="feature-card-premium"><b>È multi-azienda?</b><p>Sì, ogni azienda ha un ambiente separato con dati isolati.</p></div>
+      <div class="feature-card-premium"><b>Lo staff vede i pagamenti?</b><p>Solo se il ruolo assegnato prevede permessi finanziari.</p></div>
+      <div class="feature-card-premium"><b>Funziona online?</b><p>Sì, è pensato per desktop, tablet e mobile.</p></div>
+    </div>
+
     <div class="premium-footer">
       <div><b>CUBE Management Contract</b><p>Il gestionale online per aziende, consulenti e società di servizi.</p><small>© 2026 CUBE Management Contract</small></div>
       <div><b>Prodotto</b><a>Funzionalità</a><a>Prezzi</a><a>Integrazioni</a><a>Changelog</a></div>
@@ -1765,7 +1802,8 @@ def public_landing_page():
       <div><b>Supporto</b><a>FAQ</a><a>Guide e tutorial</a><a>Assistenza</a><a>Stato servizio</a></div>
       <div><b>Legale</b><a>Termini di servizio</a><a>Privacy policy</a><a>Cookie policy</a><a>DPA</a></div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
+    st.markdown(bottom_html, unsafe_allow_html=True)
 
 
 def render_public_plan_cards():
@@ -1774,6 +1812,7 @@ def render_public_plan_cards():
         st.info("I pacchetti saranno disponibili a breve.")
         return
 
+    order = ["Free", "Starter", "Professional", "Business", "Enterprise"]
     plan_icons = {
         "Free": "👤",
         "Starter": "🚀",
@@ -1782,51 +1821,53 @@ def render_public_plan_cards():
         "Enterprise": "👑",
     }
     plan_notes = {
-        "Free": ["Fino a 3 contratti"],
-        "Starter": ["10 clienti / contratti", "1 staff aggiuntivo"],
-        "Professional": ["30 clienti", "3 staff aggiuntivi"],
-        "Business": ["100 clienti", "10 staff aggiuntivi"],
-        "Enterprise": ["Tutto illimitato", "Supporto prioritario"],
+        "Free": ["30 giorni gratuiti", "fino a 3 contratti da gestire"],
+        "Starter": ["30 giorni gratuiti", "fino a 10 clienti/contratti", "+ 1 membro staff"],
+        "Professional": ["30 giorni gratuiti", "fino a 30 clienti", "+ 3 membri staff"],
+        "Business": ["30 giorni gratuiti", "fino a 100 clienti", "+ 10 membri staff"],
+        "Enterprise": ["30 giorni gratuiti", "tutto illimitato"],
     }
 
-    cards = []
-    for _, p in plans.iterrows():
-        name = str(p.get("nome") or "")
+    rows = []
+    for name in order:
+        df = plans[plans["nome"].astype(str) == name]
+        if df.empty:
+            continue
+        p = df.iloc[0].to_dict()
         featured = " featured" if name == "Professional" else ""
         ribbon = "<div class='popular-ribbon'>Più scelto</div>" if name == "Professional" else ""
         price = money(float(p.get("prezzo_mensile") or 0))
-        items = "".join([f"<li>{safe(x)}</li>" for x in plan_notes.get(name, [])])
-        icon = plan_icons.get(name, "📦")
-        cards.append(f"""
+        notes = plan_notes.get(name, [])
+        subtitle = notes[0] if notes else ""
+        bullet_lines = "<br>".join([safe(x) for x in notes[1:]])
+        cta = "Prova gratis" if name == "Free" else "Scegli piano"
+        rows.append(f"""
         <div class="pricing-card{featured}">
           {ribbon}
-          <div class="pricing-icon">{icon}</div>
+          <div class="pricing-icon">{plan_icons.get(name,'📦')}</div>
           <h3>{safe(name)}</h3>
           <div class="price">{price}<small> /mese</small></div>
-          <p>30 giorni gratuiti</p>
-          <ul>{items}</ul>
-          <a class="html-btn {'primary' if name == 'Professional' else 'secondary'}" href="/?public_page=register&plan={safe(name)}">{"Scegli piano" if name != "Free" else "Prova gratis"}</a>
+          <p>{safe(subtitle)}</p>
+          <ul><li>{bullet_lines.replace('<br>','</li><li>')}</li></ul>
+          <a class="html-btn {'primary' if name == 'Professional' else 'secondary'}" href="/?public_page=register&plan={safe(name)}">{cta}</a>
         </div>
         """)
 
-    st.markdown("<div class='pricing-grid'>" + "\n".join(cards) + "</div>", unsafe_allow_html=True)
+    st.markdown("<div class='pricing-grid'>" + "\n".join(rows) + "</div>", unsafe_allow_html=True)
 
 
 def public_plans_page():
     css()
     public_topbar()
-    st.markdown("""
-    <div class="premium-hero" style="padding:34px 40px">
-      <div class="premium-badge">💳 Pacchetti · 30 giorni gratuiti</div>
-      <h1 style="font-size:3rem">Scegli il piano più adatto alla tua azienda</h1>
-      <p>Tutti i pacchetti includono 30 giorni gratuiti. Nessun vincolo: puoi cambiare piano in qualsiasi momento.</p>
+    st.markdown(textwrap.dedent("""
+    <div class="premium-title" style="margin-top:8px">
+      <div class="iconbox">💳</div>
+      <div><h2>Scegli il pacchetto</h2><p>Tutti i piani includono 30 giorni di prova gratuita. Nessun vincolo, puoi cambiare piano quando vuoi.</p></div>
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
     render_public_plan_cards()
     st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("Torna alla home", key="back_home_from_plans"):
-        set_public_page("home")
-        st.rerun()
+    st.markdown("<div class='final-cta'><div><h2>Vuoi iniziare subito?</h2><p>Attiva il tuo account aziendale e configura il portale in pochi minuti.</p></div><div class='premium-actions' style='margin:0'><a class='html-btn secondary' href='/?public_page=home'>Torna alla home</a></div></div>", unsafe_allow_html=True)
 
 
 def public_login_page():

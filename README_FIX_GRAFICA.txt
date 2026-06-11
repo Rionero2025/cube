@@ -1,0 +1,1 @@
+Fix applicato: landing pubblica resa con HTML dedent e senza mix di bottoni Streamlit dentro container HTML, per evitare rendering sballato e blocchi HTML mostrati come testo.

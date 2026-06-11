@@ -1,0 +1,1 @@
+Questa versione aggiorna la landing pubblica del progetto CUBE per avvicinarla alla seconda schermata di riferimento: topbar premium, hero 2 colonne, mockup dashboard, griglia funzionalità, step, pricing 5 piani e footer premium. Importare tutto il contenuto dello zip nel repository e ridistribuire su Render.
