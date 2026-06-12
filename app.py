@@ -37,6 +37,7 @@ except Exception:
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", str(BASE_DIR / "uploads")))
+STATIC_SITE_DIR = BASE_DIR / "public_site_complete"
 DATA_DIR.mkdir(exist_ok=True)
 UPLOAD_DIR.mkdir(exist_ok=True)
 
@@ -1705,7 +1706,7 @@ def cube_second_screen_html() -> str:
 <section id='pricing' class='wrap'><div class='section-title'><h2>Scegli il pacchetto</h2><p>Tutti i piani includono 30 giorni di prova gratuita.</p></div><div class='pricing'><div class='price-card'><div class='plan-icon'>👤</div><h3>Free</h3><div class='price'>€0<small>/mese</small></div><p>30 giorni gratuiti</p><ul><li>Fino a 3 contratti</li></ul><a class='btn secondary' target='_parent' href='/?public_page=register&plan=Free'>Prova gratis</a></div><div class='price-card'><div class='plan-icon'>🚀</div><h3>Starter</h3><div class='price'>€9<small>/mese</small></div><p>30 giorni gratuiti</p><ul><li>10 clienti / contratti</li><li>1 staff aggiuntivo</li></ul><a class='btn secondary' target='_parent' href='/?public_page=register&plan=Starter'>Scegli piano</a></div><div class='price-card popular'><div class='ribbon'>Più scelto</div><div class='plan-icon'>⭐</div><h3>Professional</h3><div class='price'>€29<small>/mese</small></div><p>30 giorni gratuiti</p><ul><li>30 clienti</li><li>3 membri staff</li></ul><a class='btn primary' target='_parent' href='/?public_page=register&plan=Professional'>Scegli piano</a></div><div class='price-card'><div class='plan-icon'>💼</div><h3>Business</h3><div class='price'>€49<small>/mese</small></div><p>30 giorni gratuiti</p><ul><li>100 clienti</li><li>10 membri staff</li></ul><a class='btn secondary' target='_parent' href='/?public_page=register&plan=Business'>Scegli piano</a></div><div class='price-card'><div class='plan-icon'>👑</div><h3>Enterprise</h3><div class='price'>€99<small>/mese</small></div><p>30 giorni gratuiti</p><ul><li>Tutto illimitato</li><li>Supporto prioritario</li></ul><a class='btn secondary' target='_parent' href='/?public_page=register&plan=Enterprise'>Scegli piano</a></div></div></section>
 <section class='wrap benefits'><div class='benefit'><span>☁️</span><div><b>Multi-tenant SaaS</b><small>Più aziende, dati separati.</small></div></div><div class='benefit'><span>👥</span><div><b>Accessi staff</b><small>Ruoli e responsabilità.</small></div></div><div class='benefit'><span>🔒</span><div><b>Dati separati</b><small>Ogni azienda ha i propri dati.</small></div></div><div class='benefit'><span>☁️</span><div><b>Cloud online</b><small>Accesso sempre disponibile.</small></div></div><div class='benefit'><span>📱</span><div><b>Responsive</b><small>Desktop, tablet e smartphone.</small></div></div></section>
 <section class='wrap cta'><div><h2>Porta online la gestione della tua azienda</h2><p>Semplifica contratti, clienti, lavori e pagamenti. Inizia oggi la prova gratuita di 30 giorni.</p></div><div class='hero-actions' style='margin:0'><a class='btn secondary' target='_parent' href='/?public_page=plans'>Inizia ora →</a><a class='btn primary' target='_parent' href='/?public_page=plans'>Richiedi demo</a></div></section>
-<footer class='footer'><div class='wrap footer-grid'><div><b>CUBE Management Contract</b><p>Il gestionale online per aziende, consulenti e società di servizi.</p></div><div><b>Prodotto</b><a>Funzionalità</a><a>Prezzi</a><a>Integrazioni</a></div><div><b>Azienda</b><a>Chi siamo</a><a>Lavora con noi</a><a>Contatti</a></div><div><b>Supporto</b><a>FAQ</a><a>Guide e tutorial</a><a>Assistenza</a></div><div><b>Legale</b><a>Privacy policy</a><a>Termini di servizio</a><a>Cookie policy</a></div><div class='newsletter'><b>Resta aggiornato</b><p>Novità e consigli utili.</p><input placeholder='La tua email'></div></div></footer>
+<footer class='footer'><div class='wrap footer-grid'><div><b>CUBE Management Contract</b><p>Il gestionale online per aziende, consulenti e società di servizi.</p></div><div><b>Prodotto</b><a href="/?public_page=features" target="_parent">Funzionalità</a><a href="/?public_page=pricing" target="_parent">Prezzi</a><a href="/?public_page=features#integrazioni" target="_parent">Integrazioni</a></div><div><b>Azienda</b><a href="/?public_page=about" target="_parent">Chi siamo</a><a href="/?public_page=contact#lavora-con-noi" target="_parent">Lavora con noi</a><a href="/?public_page=contact" target="_parent">Contatti</a></div><div><b>Supporto</b><a href="/?public_page=faq" target="_parent">FAQ</a><a href="/?public_page=support#guide" target="_parent">Guide e tutorial</a><a href="/?public_page=support" target="_parent">Assistenza</a></div><div><b>Legale</b><a href="/?public_page=privacy" target="_parent">Privacy policy</a><a href="/?public_page=terms" target="_parent">Termini di servizio</a><a href="/?public_page=cookie" target="_parent">Cookie policy</a></div><div class='newsletter'><b>Resta aggiornato</b><p>Novità e consigli utili.</p><input placeholder='La tua email'></div></div></footer>
 </main>
 </body>
 </html>
@@ -2133,9 +2134,9 @@ tr:last-child td{border-bottom:0}
     <footer class="footer">
       <div class="wrap footer-grid">
         <div><b>CUBE Management Contract</b><p>Gestionale SaaS per contratti, clienti, lavori, documenti, pagamenti e staff.</p></div>
-        <div><b>Prodotto</b><a>Funzioni</a><a>Prezzi</a><a>Integrazioni</a></div>
-        <div><b>Supporto</b><a>FAQ</a><a>Guide</a><a>Assistenza</a></div>
-        <div><b>Legale</b><a>Privacy</a><a>Termini</a><a>Cookie</a></div>
+        <div><b>Prodotto</b><a href="/?public_page=features" target="_parent">Funzioni</a><a href="/?public_page=pricing" target="_parent">Prezzi</a><a href="/?public_page=features#integrazioni" target="_parent">Integrazioni</a></div>
+        <div><b>Supporto</b><a href="/?public_page=faq" target="_parent">FAQ</a><a href="/?public_page=support#guide" target="_parent">Guide</a><a href="/?public_page=support" target="_parent">Assistenza</a></div>
+        <div><b>Legale</b><a href="/?public_page=privacy" target="_parent">Privacy</a><a href="/?public_page=terms" target="_parent">Termini</a><a href="/?public_page=cookie" target="_parent">Cookie</a></div>
       </div>
     </footer>
   </main>
@@ -2149,11 +2150,44 @@ def public_features_page():
 def public_features_page():
     render_public_html(cube_features_page_html(), height=2500)
 
+
+def render_static_public_page(filename: str, height: int = 3200):
+    """Renderizza una pagina HTML statica del sito pubblico dentro il portale, mantenendo i link cliccabili."""
+    path = STATIC_SITE_DIR / filename
+    if not path.exists():
+        alt = BASE_DIR / "public_site" / filename
+        path = alt if alt.exists() else path
+    if not path.exists():
+        st.error(f"Pagina non trovata: {filename}")
+        return
+    html = path.read_text(encoding="utf-8", errors="ignore")
+    components.html(html, height=height, scrolling=True)
+
+PUBLIC_STATIC_ROUTES = {
+    "home": ("index.html", 3200),
+    "index": ("index.html", 3200),
+    "features": ("funzionalita.html", 3600),
+    "funzionalita": ("funzionalita.html", 3600),
+    "how": ("come-funziona.html", 2800),
+    "come-funziona": ("come-funziona.html", 2800),
+    "pricing": ("prezzi.html", 3000),
+    "prezzi": ("prezzi.html", 3000),
+    "about": ("chi-siamo.html", 3300),
+    "chi-siamo": ("chi-siamo.html", 3300),
+    "faq": ("faq.html", 2600),
+    "contact": ("contatti.html", 2600),
+    "contatti": ("contatti.html", 2600),
+    "support": ("supporto.html", 2400),
+    "supporto": ("supporto.html", 2400),
+    "security": ("sicurezza.html", 2400),
+    "sicurezza": ("sicurezza.html", 2400),
+    "privacy": ("privacy.html", 2200),
+    "terms": ("termini.html", 2200),
+    "termini": ("termini.html", 2200),
+    "cookie": ("cookie.html", 2000),
+}
+
 def public_router():
-    # Permette link diretti tipo:
-    # /?public_page=login
-    # /?public_page=plans
-    # /?public_page=register&plan=Professional
     try:
         qp = st.query_params
         qp_page = qp.get("public_page", None)
@@ -2165,17 +2199,20 @@ def public_router():
     except Exception:
         pass
 
-    page = st.session_state.get("public_page", "home")
+    page = str(st.session_state.get("public_page", "home"))
+
     if page == "login":
         public_login_page()
     elif page == "plans":
         public_plans_page()
     elif page == "register":
         public_register_page()
-    elif page in ["features", "funzionalita"]:
-        public_features_page()
+    elif page in PUBLIC_STATIC_ROUTES:
+        filename, height = PUBLIC_STATIC_ROUTES[page]
+        render_static_public_page(filename, height=height)
     else:
-        public_landing_page()
+        render_static_public_page("index.html", height=3200)
+
 
 # Backwards compatibility
 def login_page():
